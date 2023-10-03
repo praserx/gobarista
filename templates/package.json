@@ -1,0 +1,14 @@
+{
+  "name": "gobarista-email-template",
+  "version": "1.0.0",
+  "description": "GoBarista e-mail mjml.io template",
+  "main": "index.js",
+  "scripts": {
+    "build": "./node_modules/mjml/bin/mjml ./mjml/bill.cs.mjml -o ./dist/bill.cs.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "mjml": "^4.14.1"
+  }
+}

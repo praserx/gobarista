@@ -1,0 +1,190 @@
+<mjml>
+    <mj-head>
+        <mj-raw>
+            <style type="text/css">
+                html, body {
+                    font-family: 'Lucida Console', monospace;
+                    color: #302b2a;
+                }
+                h1 { font-size: 22px; line-height: 26px; font-weight: bolder; }
+                h2 { font-size: 20px; line-height: 24px; font-weight: bolder; }
+                h3 { font-size: 18px; line-height: 22px;}
+                h4 { font-size: 16px; }
+                h1, h2, h3 {
+                    color: #302b2a;
+                    text-transform: uppercase;
+                }
+                p {
+                    color: #302b2a;
+                    line-height: 22px;
+                }
+                table {
+                    color: #302b2a;
+                    padding: 0px;
+                    margin: 0px;
+                }
+                a, a:link, a:visited, a:active {
+                    color: #302b2a;
+                    text-decoration: none;
+                    padding: 0px;
+                    margin: 0px;
+                }
+                a:hover {
+                    text-decoration: underline;
+                }
+            </style>
+        </mj-raw>
+        <mj-attributes>
+            <mj-text padding="0" font-size="16px" color="#ffffff" />
+            <mj-all font-family="'Lucida Console', monospace" />
+        </mj-attributes>
+    </mj-head>
+    <mj-body background-color="#d9d6d5">
+        <mj-section padding="50px 0px 35px 0px">
+            <mj-column vertical-align="middle">
+                <mj-text align="center" color="#302b2a" font-size="25px" font-weight="600" letter-spacing="2px">
+                    Praser's Coffee Service
+                </mj-text>
+                <mj-text align="center" color="#302b2a" font-size="18px" font-weight="400" letter-spacing="2px" padding="10px 0px 0px 0px">
+                    Since 2021
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding="30px 30px 5px 30px" background-color="#ffffff">
+            <mj-column>
+                <mj-text align="left" line-height="22px" font-size="16px">
+                    <p>
+                        BID:</br>
+                        Zákazník:</br>
+                        Jméno:</br>
+                        Lokalita:</br>
+                        Úroveň:
+                    </p>
+                </mj-text>
+            </mj-column>
+            <mj-column>
+                <mj-text align="left" line-height="22px" font-size="16px">
+                    <p>
+                        #{{.BID}}</br>
+                        #{{.UID}}</br>
+                        {{.Name}}</br>
+                        {{.Location}}</br>
+                        {{.Rank}}
+                    </p>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding="5px 30px" background-color="#ffffff">
+            <mj-column>
+                <mj-text align="center" line-height="22px" font-size="16px">
+                    <p>*****************************************************</p>
+                    <p>
+                        Účtované období</br>
+                        {{.PeriodFrom}} - {{.PeriodTo}}
+                    </p>
+                    <p>*****************************************************</p>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding="5px 30px" background-color="#ffffff">
+            <mj-column>
+                <mj-table font-size="16px" padding="0px">
+                    <tr style="text-align: left;">
+                        <th style="padding: 5px 0px;">Položka</th>
+                        <th style="padding: 5px 0px;">Cena</th>
+                        <th style="padding: 5px 0px;">Množství</th>
+                        <th style="padding: 5px 0px; text-align:right;">Celkem</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0px;">Káva</td>
+                        <td style="padding: 5px 0px;">{{.UnitPrice}}</td>
+                        <td style="padding: 5px 0px;">{{.Quantity}}</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.Amount}}</td>
+                    </tr>
+                </mj-table>
+            </mj-column>
+        </mj-section>
+        <mj-section padding="5px 30px" background-color="#ffffff">
+            <mj-column>
+                <mj-text align="center" line-height="22px" font-size="16px">
+                    <p>*****************************************************</p>
+                    <p>Informace o platbě</p>
+                    <p>*****************************************************</p>
+                </mj-text>
+                <mj-table font-size="16px" padding="0px">
+                    <tr>
+                        <td style="padding: 5px 0px;">Číslo účtu</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.PaymentAN}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0px;">Variabilní symbol</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.PaymentVS}}</td>
+                    </tr>
+                </mj-table>
+                <mj-text align="center">
+                    <img width="70%" height="auto" alt="QRPayment" src="data:image/png;base64,{{.QRCode}}" />
+                </mj-text>
+                <mj-text align="center" line-height="22px" font-size="16px">
+                    <p>{{.PaymentCustomMessage}}</p>
+                </mj-text>
+                <mj-text align="center" line-height="22px" font-size="16px">
+                    <p><b>Tato aplikace je nyní v pilotním provozu, ověřte proto prosím veškeré platební údaje.</b></p>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding="5px 30px" background-color="#ffffff">
+            <mj-column>
+                <mj-text align="center" line-height="22px" font-size="16px">
+                    <p>*****************************************************</p>
+                    <p>Souhrnné statisky za účtované období</p>
+                    <p>*****************************************************</p>
+                </mj-text>
+                <mj-table font-size="16px" padding="0px">
+                    <tr>
+                        <td style="padding: 5px 0px;">Období od</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.PeriodFrom}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0px;">Období do</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.PeriodTo}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0px;">Počet osob milujících kávu</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.TotalCustomers}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0px;">Celkem měsíců</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.TotalMonths}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0px;">Celkem vypitých káv</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.TotalQuantity}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0px;">Průměrný počet káv na osobu</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.TotalAverage}}</td>
+                    </tr>
+                </mj-table>
+            </mj-column>
+        </mj-section>
+        <mj-section padding="5px 30px 30px 30px" background-color="#ffffff">
+            <mj-column>
+                <mj-text align="center" line-height="16px" font-size="13px">
+                    <p>Velice si ceníme vaší přízně a doufáme, že s námi zůstanete i&nbsp;další zúčtovací období. Kvalita naší práce je přímo úměrná počtu vypitých káv, proto nezapomínejte na pitný režim.</p>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding="0px 30px">
+            <mj-column>
+                <mj-text align="center" line-height="16px" font-size="11px">
+                    <p><a href="https://github.com/praserx/gobarista">GoBarista na GitHubu</a></p>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section>
+            <mj-column>
+                <mj-spacer height="40px" />
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

@@ -1,0 +1,27 @@
+# Binary files
+bin/*
+
+# Unnecessary MJML stuff
+templates/dist/*.html
+templates/node_modules
+
+# Resources public generated content
+resources/public/fonts
+resources/public/images
+resources/public/svgs
+resources/public/*.html
+resources/public/*.txt
+resources/public/*.js
+resources/public/*.map
+resources/public/*.css
+resources/public/*.png
+
+# Resources templates generated content
+resources/templates/*.html
+
+# Local production files
+.local/*
+
+# VS Code files
+.vscode
+*.code-workspace
