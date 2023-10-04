@@ -1,3 +1,6 @@
+# v1.1.1
+- Version fix
+
 # v1.1.0
 - Added models.Schema table and its Version column
 - Added credit field to models.User (do `gobarista database migrate`)
