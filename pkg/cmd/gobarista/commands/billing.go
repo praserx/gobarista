@@ -303,7 +303,11 @@ var BillingIssueBills = cli.Command{
 				return fmt.Errorf("error: cannot get user: user_id=%d: %v", bill.UserID, err)
 			}
 
-			mail.SendBill(user, period, bill, len(bills))
+			if err = mail.SendBill(user, period, bill, len(bills)); err != nil {
+				logger.Error(fmt.Sprintf("error: billing e-mail has not been sent for bill_id=%d user_id=%d user_name='%s' user_email:'%s'", bill.ID, user.ID, user.Firstname+" "+user.Lastname, user.Email))
+			} else {
+				logger.Info(fmt.Sprintf("billing e-mail has been sent for bill_id=%d user_id=%d user_name='%s' user_email:'%s'", bill.ID, user.ID, user.Firstname+" "+user.Lastname, user.Email))
+			}
 
 			err = database.UpdateBillOnIssued(bill.ID)
 			if err != nil {
