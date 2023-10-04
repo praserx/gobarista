@@ -24,17 +24,23 @@ func SendBill(user models.User, period models.Period, bill models.Bill, totalCus
 	pinfo.Amount = fmt.Sprintf("%.2f", bill.Amount)
 	pinfo.VS = fmt.Sprintf("%d", bill.ID)
 
+	totalMonths := 1
+	if period.TotalMonths != 0 {
+		totalMonths = period.TotalMonths
+	}
+
 	tvars.BID = fmt.Sprintf("%d", bill.ID)
 	tvars.UID = fmt.Sprintf("%d", user.ID)
 	tvars.Name = fmt.Sprintf("%s %s", user.Firstname, user.Lastname)
 	tvars.Location = user.Location
-	tvars.Rank = rank.ComputeRank(bill.Quantity / period.TotalMonths)
+	tvars.Credit = fmt.Sprintf("%d", user.Credit)
+	tvars.Rank = rank.ComputeRank(bill.Quantity / totalMonths)
 	tvars.PeriodFrom = period.DateFrom.Format("2. 1. 2006")
 	tvars.PeriodTo = period.DateTo.Format("2. 1. 2006")
 	tvars.UnitPrice = fmt.Sprintf("%.2f", period.UnitPrice)
 	tvars.Quantity = fmt.Sprintf("%d", bill.Quantity)
 	tvars.Amount = fmt.Sprintf("%.2f", bill.Amount)
-	tvars.TotalMonths = fmt.Sprintf("%d", period.TotalMonths)
+	tvars.TotalMonths = fmt.Sprintf("%d", totalMonths)
 	tvars.TotalQuantity = fmt.Sprintf("%d", period.TotalQuantity)
 	tvars.TotalAverage = fmt.Sprintf("%d", period.TotalQuantity/totalCustomers)
 	tvars.TotalCustomers = fmt.Sprintf("%d", totalCustomers)

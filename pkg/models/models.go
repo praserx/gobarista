@@ -7,6 +7,13 @@ import (
 	"gorm.io/gorm"
 )
 
+// VERSION of database schema
+const VERSION = uint(1)
+
+type Schema struct {
+	Version uint `gorm:"primarykey" json:"version"`
+}
+
 type User struct {
 	ID        uint           `gorm:"primarykey" json:"id"`  // GORM default
 	CreatedAt time.Time      `json:"timestamp"`             // GORM default
@@ -17,6 +24,7 @@ type User struct {
 	Firstname string         `json:"firstname"`
 	Lastname  string         `json:"lastname"`
 	Location  string         `json:"location"`
+	Credit    int            `json:"credit"`
 }
 
 type Period struct {

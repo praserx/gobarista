@@ -34,6 +34,7 @@ type TemplateVars struct {
 	UID                  string
 	Name                 string
 	Location             string
+	Credit               string
 	Rank                 string
 	PeriodFrom           string
 	PeriodTo             string
