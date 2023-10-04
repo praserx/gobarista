@@ -63,10 +63,30 @@ func Close() {
 // RunAutoMigration creates all required tables in database.
 func RunAutoMigration() error {
 	return gdb.AutoMigrate(
+		&models.Schema{},
 		&models.User{},
 		&models.Period{},
 		&models.Bill{},
 	)
+}
+
+func InsertSchema(schema models.Schema) (int, error) {
+	obj := schema
+	result := gdb.Create(&obj)
+	return int(obj.Version), result.Error
+}
+
+func SelectVersion() (schema models.Schema, err error) {
+	result := gdb.First(&schema)
+	return schema, result.Error
+}
+
+func UpdateVersion(version uint) error {
+	var schema models.Schema
+	gdb.First(&schema)
+	return gdb.
+		Model(&schema).
+		Update("Version", version).Error
 }
 
 func SelectAllUsers() (users []models.User, err error) {

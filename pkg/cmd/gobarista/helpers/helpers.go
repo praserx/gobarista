@@ -2,9 +2,12 @@
 package helpers
 
 import (
+	"fmt"
+
 	"github.com/praserx/gobarista/pkg/config"
 	"github.com/praserx/gobarista/pkg/database"
 	"github.com/praserx/gobarista/pkg/mail"
+	"github.com/praserx/gobarista/pkg/models"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/ini.v1"
 )
@@ -52,6 +55,17 @@ func SetupDatabase(ctx *cli.Context) (err error) {
 	options := []database.Option{}
 	options = append(options, database.WithPath(opts.Path))
 	database.SetupDatabase(options...)
+
+	if (ctx.Command.Name != "initialize") && (ctx.Command.Name != "migrate") {
+		schema, err := database.SelectVersion()
+		if err != nil {
+			return fmt.Errorf("cannot get schema from database for version check: %v", err)
+		}
+
+		if schema.Version != models.VERSION {
+			return fmt.Errorf("migrate first: db_version=%d, required_version=%d", schema.Version, models.VERSION)
+		}
+	}
 
 	return nil
 }

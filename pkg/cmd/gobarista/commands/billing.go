@@ -187,6 +187,7 @@ var BillingPeriodSummary = cli.Command{
 		fmt.Printf("Unit price: 	%.2f\n", period.UnitPrice)
 		fmt.Printf("Total quantity: %d\n", period.TotalQuantity)
 		fmt.Printf("Total amount: 	%.2f\n", period.TotalAmount)
+		fmt.Printf("Total months:   %d\n", period.TotalMonths)
 		fmt.Printf("Closed: 		%t\n", period.Closed)
 		fmt.Printf("Total bills: 	%d\n", len(bills))
 
@@ -222,7 +223,7 @@ var BillingAddBill = cli.Command{
 			return fmt.Errorf("error: cannot parse int: %v", err)
 		}
 
-		_, err = database.SelectUserByID(uint(uid))
+		user, err := database.SelectUserByID(uint(uid))
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("error: user not found")
 		} else if err != nil {
@@ -250,7 +251,7 @@ var BillingAddBill = cli.Command{
 		if err != nil {
 			return fmt.Errorf("error: cannot add new bill to billing period: %v", err.Error())
 		}
-		logger.Info(fmt.Sprintf("new bill successfully added to billing period: new bill id: %d", id))
+		logger.Info(fmt.Sprintf("new bill successfully added to billing period for user_id=%d, user_name=%s: new bill id: %d", uid, user.Firstname+" "+user.Lastname, id))
 
 		return nil
 	},
@@ -302,7 +303,11 @@ var BillingIssueBills = cli.Command{
 				return fmt.Errorf("error: cannot get user: user_id=%d: %v", bill.UserID, err)
 			}
 
-			mail.SendBill(user, period, bill, len(bills))
+			if err = mail.SendBill(user, period, bill, len(bills)); err != nil {
+				logger.Error(fmt.Sprintf("error: billing e-mail has not been sent for bill_id=%d user_id=%d user_name='%s' user_email:'%s'", bill.ID, user.ID, user.Firstname+" "+user.Lastname, user.Email))
+			} else {
+				logger.Info(fmt.Sprintf("billing e-mail has been sent for bill_id=%d user_id=%d user_name='%s' user_email:'%s'", bill.ID, user.ID, user.Firstname+" "+user.Lastname, user.Email))
+			}
 
 			err = database.UpdateBillOnIssued(bill.ID)
 			if err != nil {

@@ -58,6 +58,7 @@
                         Zákazník:</br>
                         Jméno:</br>
                         Lokalita:</br>
+                        Kredit:</br>
                         Úroveň:
                     </p>
                 </mj-text>
@@ -69,6 +70,7 @@
                         #{{.UID}}</br>
                         {{.Name}}</br>
                         {{.Location}}</br>
+                        {{.Credit}}</br>
                         {{.Rank}}
                     </p>
                 </mj-text>
@@ -90,16 +92,16 @@
             <mj-column>
                 <mj-table font-size="16px" padding="0px">
                     <tr style="text-align: left;">
-                        <th style="padding: 5px 0px;">Položka</th>
-                        <th style="padding: 5px 0px;">Cena</th>
-                        <th style="padding: 5px 0px;">Množství</th>
-                        <th style="padding: 5px 0px; text-align:right;">Celkem</th>
+                        <th style="padding: 5px 0px;text-align:left;">Položka</th>
+                        <th style="padding: 5px 0px;text-align:left;">Cena</th>
+                        <th style="padding: 5px 0px;text-align:left;">Množství</th>
+                        <th style="padding: 5px 0px;text-align:right;">Celkem</th>
                     </tr>
                     <tr>
-                        <td style="padding: 5px 0px;">Káva</td>
-                        <td style="padding: 5px 0px;">{{.UnitPrice}}</td>
-                        <td style="padding: 5px 0px;">{{.Quantity}}</td>
-                        <td style="padding: 5px 0px; text-align:right;">{{.Amount}}</td>
+                        <td style="padding: 5px 0px;text-align:left;">Káva</td>
+                        <td style="padding: 5px 0px;text-align:left;">{{.UnitPrice}}</td>
+                        <td style="padding: 5px 0px;text-align:left;">{{.Quantity}}</td>
+                        <td style="padding: 5px 0px;text-align:right;">{{.Amount}}</td>
                     </tr>
                 </mj-table>
             </mj-column>
