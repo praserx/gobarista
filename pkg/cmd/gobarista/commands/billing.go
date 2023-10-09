@@ -17,8 +17,9 @@ import (
 )
 
 var Billing = cli.Command{
-	Name:  "billing",
-	Usage: "Billing periods and bills management",
+	Name:    "billing",
+	Aliases: []string{"b"},
+	Usage:   "Billing periods and bills management",
 	Subcommands: []*cli.Command{
 		&BillingNewPeriod,
 		&BillingAddBill,
@@ -45,9 +46,10 @@ var Billing = cli.Command{
 }
 
 var BillingNewPeriod = cli.Command{
-	Name:      "create-period",
+	Name:      "period-create",
+	Aliases:   []string{"pcr"},
 	Usage:     "Add new billing period",
-	ArgsUsage: "[from(2006-01-02) to(2006-01-02) issued(2006-01-02) total_amount]",
+	ArgsUsage: "[from(2006-01-02) to(2006-01-02) issued(2006-01-02) total_amount amount_per_package]",
 	Action: func(ctx *cli.Context) (err error) {
 		if err = helpers.SetupDatabase(ctx); err != nil {
 			return err
@@ -77,12 +79,18 @@ var BillingNewPeriod = cli.Command{
 			return fmt.Errorf("error: cannot parse float: %v", err)
 		}
 
+		AmountPerPackage, err := strconv.ParseFloat(ctx.Args().Get(4), 32)
+		if err != nil {
+			return fmt.Errorf("error: cannot parse float: %v", err)
+		}
+
 		period := models.Period{
-			DateFrom:    DateFrom,
-			DateTo:      DateTo,
-			DateOfIssue: DateOfIssue,
-			TotalMonths: int(DateTo.Sub(DateFrom).Hours() / 24 / 30),
-			TotalAmount: float32(TotalAmount),
+			DateFrom:         DateFrom,
+			DateTo:           DateTo,
+			DateOfIssue:      DateOfIssue,
+			TotalMonths:      int(DateTo.Sub(DateFrom).Hours() / 24 / 30),
+			TotalAmount:      float32(TotalAmount),
+			AmountPerPackage: float32(AmountPerPackage),
 		}
 
 		id, err := database.InsertPeriod(period)
@@ -96,7 +104,8 @@ var BillingNewPeriod = cli.Command{
 }
 
 var BillingClosePeriod = cli.Command{
-	Name:      "close-period",
+	Name:      "period-close",
+	Aliases:   []string{"pcl"},
 	Usage:     "Close billing period and calculate remaining values such as total quantity or unit price",
 	ArgsUsage: "[id]",
 	Action: func(ctx *cli.Context) (err error) {
@@ -130,7 +139,7 @@ var BillingClosePeriod = cli.Command{
 			totalQuantity += bill.Quantity
 		}
 
-		unitPrice := period.TotalAmount / float32(totalQuantity)
+		unitPrice := (period.TotalAmount - period.Cash) / float32(totalQuantity)
 
 		err = database.UpdatePeriodOnClose(uint(pid), totalQuantity, unitPrice)
 		if err != nil {
@@ -154,6 +163,7 @@ var BillingClosePeriod = cli.Command{
 
 var BillingPeriodSummary = cli.Command{
 	Name:      "period-summary",
+	Aliases:   []string{"psu"},
 	Usage:     "Get numbers and statistics for given billing period",
 	ArgsUsage: "[id]",
 	Action: func(ctx *cli.Context) (err error) {
@@ -182,14 +192,16 @@ var BillingPeriodSummary = cli.Command{
 			return fmt.Errorf("error: cannot get bills for given period: %v", err)
 		}
 
-		fmt.Printf("ID:     		%d\n", period.ID)
-		fmt.Printf("Period: 		%s - %s\n", period.DateFrom.Format("2006-01-02"), period.DateTo.Format("2006-01-02"))
-		fmt.Printf("Unit price: 	%.2f\n", period.UnitPrice)
-		fmt.Printf("Total quantity: %d\n", period.TotalQuantity)
-		fmt.Printf("Total amount: 	%.2f\n", period.TotalAmount)
-		fmt.Printf("Total months:   %d\n", period.TotalMonths)
-		fmt.Printf("Closed: 		%t\n", period.Closed)
-		fmt.Printf("Total bills: 	%d\n", len(bills))
+		fmt.Printf("ID:                %d\n", period.ID)
+		fmt.Printf("Period:            %s - %s\n", period.DateFrom.Format("2006-01-02"), period.DateTo.Format("2006-01-02"))
+		fmt.Printf("Unit price:        %.2f\n", period.UnitPrice)
+		fmt.Printf("Total quantity:    %d\n", period.TotalQuantity)
+		fmt.Printf("Total amount:      %.2f\n", period.TotalAmount)
+		fmt.Printf("Total amount (wc): %.2f (total - cash)\n", period.TotalAmount)
+		fmt.Printf("Total months:      %d\n", period.TotalMonths)
+		fmt.Printf("Cash:              %.2f\n", period.Cash)
+		fmt.Printf("Closed:            %t\n", period.Closed)
+		fmt.Printf("Total bills:       %d\n", len(bills))
 
 		return nil
 	},
@@ -197,6 +209,7 @@ var BillingPeriodSummary = cli.Command{
 
 var BillingAddBill = cli.Command{
 	Name:      "add-bill",
+	Aliases:   []string{"a"},
 	Usage:     "Add bill for given user and period with specified quantity",
 	ArgsUsage: "[user_id period_id quantity]",
 	Action: func(ctx *cli.Context) (err error) {
@@ -259,6 +272,7 @@ var BillingAddBill = cli.Command{
 
 var BillingIssueBills = cli.Command{
 	Name:      "issue-bills",
+	Aliases:   []string{"i"},
 	Usage:     "Issue all bills for giver billing period",
 	ArgsUsage: "[id]",
 	Action: func(ctx *cli.Context) (err error) {

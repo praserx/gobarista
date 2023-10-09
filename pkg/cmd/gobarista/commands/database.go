@@ -11,8 +11,9 @@ import (
 )
 
 var Database = cli.Command{
-	Name:  "database",
-	Usage: "Database initialization and checks",
+	Name:    "database",
+	Aliases: []string{"d"},
+	Usage:   "Database initialization and checks",
 	Subcommands: []*cli.Command{
 		&DatabaseInitialize,
 		&DatabaseMigrate,
@@ -68,6 +69,19 @@ var DatabaseCheck = cli.Command{
 	Name:  "check",
 	Usage: "Check SQLite database",
 	Action: func(ctx *cli.Context) (err error) {
-		return helpers.SetupDatabase(ctx)
+		if err = helpers.SetupDatabase(ctx); err != nil {
+			return err
+		}
+
+		schema, err := database.SelectVersion()
+		if err != nil {
+			return fmt.Errorf("cannot get schema from database for version check: %v", err)
+		}
+
+		if schema.Version != models.VERSION {
+			return fmt.Errorf("check failed: version miss match")
+		}
+
+		return nil
 	},
 }

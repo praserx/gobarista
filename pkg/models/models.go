@@ -40,6 +40,7 @@ type Period struct {
 	TotalQuantity    int            `json:"total_quantity"`       // Total quantity of coffees
 	TotalAmount      float32        `json:"total_amount"`         // Total amount (cost) of coffee packages
 	AmountPerPackage float32        `json:"amount_per_package"`   // Average price of coffee package
+	Cash             float32        `json:"cash"`                 // Some coffees were paid by cash
 	Closed           bool           `json:"closed"`               // Is billing period close/finished?
 }
 

@@ -17,8 +17,9 @@ import (
 )
 
 var Users = cli.Command{
-	Name:  "users",
-	Usage: "User management operations",
+	Name:    "users",
+	Aliases: []string{"u"},
+	Usage:   "User management operations",
 	Subcommands: []*cli.Command{
 		&UsersAdd,
 		&UsersAddBulk,
