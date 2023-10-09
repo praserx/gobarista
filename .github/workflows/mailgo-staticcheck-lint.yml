@@ -32,7 +32,7 @@ jobs:
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v3
       with:
-        path: ./resources/templates
+        path: ./resources
     - name: Install staticcheck
       run: go install honnef.co/go/tools/cmd/staticcheck@latest
     - name: Run staticcheck
