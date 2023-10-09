@@ -3,12 +3,8 @@ name: "Staticcheck"
 on: [push, pull_request]
 
 jobs:
-  lint:
-    strategy:
-      matrix:
-        go-version: [1.21.x]
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+  prebuild:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
@@ -16,6 +12,14 @@ jobs:
         node-version: 18
     - run: cd templates && npm install --save-dev && npm run build
     - run: cp -r ./templates/dist/* ./resources/templates
+  lint:
+    needs: prebuild
+    strategy:
+      matrix:
+        go-version: [1.21.x]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
     - name: Install Go
       uses: actions/setup-go@v2
       with:
