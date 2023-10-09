@@ -1,3 +1,8 @@
+# v1.2.0
+- Added CI CodeQL and Staticcheck
+- Added `AmountPerPackage` to models.Period
+- Added `PaymentConfirmation` to models.Bill
+
 # v1.1.1
 - Version fix
 
