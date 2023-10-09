@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/praserx/gobarista/pkg/cmd/gobarista/helpers"
@@ -23,6 +24,7 @@ var Users = cli.Command{
 	Subcommands: []*cli.Command{
 		&UsersAdd,
 		&UsersAddBulk,
+		&UsersContacts,
 	},
 	Action: func(ctx *cli.Context) (err error) {
 		if err = helpers.SetupDatabase(ctx); err != nil {
@@ -132,6 +134,41 @@ var UsersAddBulk = cli.Command{
 				logger.Info(fmt.Sprintf("user successfully created: new user id: %d", id))
 			} else {
 				logger.Info("user already exists")
+			}
+		}
+
+		return nil
+	},
+}
+
+var UsersContacts = cli.Command{
+	Name:    "contacts",
+	Aliases: []string{"c"},
+	Usage:   "Get e-mail contacts of all customers)",
+	Action: func(ctx *cli.Context) (err error) {
+		if err = helpers.SetupDatabase(ctx); err != nil {
+			return err
+		}
+
+		if ctx.NArg() != 0 {
+			return fmt.Errorf("error: too few arguments: requires (1), get (%d)", ctx.NArg())
+		}
+
+		bills, err := database.SelectAllBills()
+		if err != nil {
+			return fmt.Errorf("error: cannot get billing period: %v", err)
+		}
+
+		var contacts []string
+		for _, bill := range bills {
+			user, err := database.SelectUserByID(bill.UserID)
+			if err != nil {
+				logger.Error(fmt.Sprintf("error: cannot get user by id: user_id=%d: %v", bill.UserID, err.Error()))
+			}
+
+			if !slices.Contains(contacts, user.Email) {
+				contacts = append(contacts, user.Email)
+				fmt.Println(user.Email)
 			}
 		}
 

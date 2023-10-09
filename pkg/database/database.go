@@ -143,6 +143,11 @@ func SelectBillByID(id uint) (bill models.Bill, err error) {
 	return bill, result.Error
 }
 
+func SelectAllBills() (bills []models.Bill, err error) {
+	result := gdb.Find(&bills)
+	return bills, result.Error
+}
+
 func SelectAllBillsForPeriod(pid uint) ([]models.Bill, error) {
 	var bill []models.Bill
 	result := gdb.

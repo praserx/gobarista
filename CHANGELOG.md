@@ -2,6 +2,9 @@
 - Added CI CodeQL and Staticcheck
 - Added `AmountPerPackage` to models.Period
 - Added `PaymentConfirmation` to models.Bill
+- Added `Cash` to models.Period
+- Changed TotalAmount computation
+- Added command for all customers contacts print
 
 # v1.1.1
 - Version fix
