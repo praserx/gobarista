@@ -10,6 +10,12 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - run: cd templates && npm install --save-dev && npm run build
+    - run: cp -r ./templates/dist/* ./resources/templates
     - name: Install Go
       uses: actions/setup-go@v2
       with:
