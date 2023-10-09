@@ -8,7 +8,7 @@ import (
 )
 
 // VERSION of database schema
-const VERSION = uint(1)
+const VERSION = uint(2)
 
 type Schema struct {
 	Version uint `gorm:"primarykey" json:"version"`
