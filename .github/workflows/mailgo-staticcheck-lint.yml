@@ -12,6 +12,10 @@ jobs:
         node-version: 18
     - run: cd templates && npm install --save-dev && npm run build
     - run: cp -r ./templates/dist/* ./resources/templates
+    - uses: actions/upload-artifact@v3
+      with:
+        name: dist-templates
+        path: ./resources/templates
   lint:
     needs: prebuild
     strategy:
@@ -24,8 +28,9 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: ${{ matrix.go-version }}
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v3
     - name: Install staticcheck
       run: go install honnef.co/go/tools/cmd/staticcheck@latest
     - name: Run staticcheck
