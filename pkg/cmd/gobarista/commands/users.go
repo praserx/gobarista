@@ -95,7 +95,7 @@ var UsersAdd = cli.Command{
 
 var UsersAddBulk = cli.Command{
 	Name:      "add-bulk",
-	Usage:     "Add multiple users at once by csv file (name,e-mail,location,...)",
+	Usage:     "Add multiple users at once by csv file (eid,\"lastname firstname\",e-mail,location,...)",
 	ArgsUsage: "[file.csv]",
 	Action: func(ctx *cli.Context) (err error) {
 		if err = helpers.SetupDatabase(ctx); err != nil {
@@ -134,8 +134,8 @@ var UsersAddBulk = cli.Command{
 
 			user := models.User{
 				EID:       record[CSV_EID],
-				Firstname: strings.Fields(record[CSV_NAME])[0],
-				Lastname:  strings.Fields(record[CSV_NAME])[1],
+				Firstname: strings.Fields(record[CSV_NAME])[1],
+				Lastname:  strings.Fields(record[CSV_NAME])[0],
 				Email:     record[CSV_EMAIL],
 				Location:  record[CSV_LOCATION],
 			}
@@ -185,7 +185,19 @@ var UsersContacts = cli.Command{
 
 			if !slices.Contains(contacts, user.Email) {
 				contacts = append(contacts, user.Email)
-				fmt.Println(user.Email)
+			}
+		}
+
+		if ctx.Bool("pretty") {
+			t := table.NewWriter()
+			t.AppendHeader(table.Row{"E-mail"})
+			for _, contact := range contacts {
+				t.AppendRow(table.Row{contact})
+			}
+			fmt.Println(t.Render())
+		} else {
+			for _, contact := range contacts {
+				fmt.Println(contact)
 			}
 		}
 

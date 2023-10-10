@@ -43,10 +43,10 @@
         <mj-section padding="50px 0px 35px 0px">
             <mj-column vertical-align="middle">
                 <mj-text align="center" color="#302b2a" font-size="25px" font-weight="600" letter-spacing="2px">
-                    Praser's Coffee Service
+                    {{.Title}}
                 </mj-text>
                 <mj-text align="center" color="#302b2a" font-size="18px" font-weight="400" letter-spacing="2px" padding="10px 0px 0px 0px">
-                    Since 2021
+                    {{.Subtitle}}
                 </mj-text>
             </mj-column>
         </mj-section>
@@ -130,7 +130,7 @@
                     <p>{{.PaymentCustomMessage}}</p>
                 </mj-text>
                 <mj-text align="center" line-height="22px" font-size="16px">
-                    <p><b>Tato aplikace je nyní v pilotním provozu, ověřte proto prosím veškeré platební údaje.</b></p>
+                    <p><b>Před odesláním platby prosím ověřte platební údaje (číslo účtu, variabilní symbol).</b></p>
                 </mj-text>
             </mj-column>
         </mj-section>

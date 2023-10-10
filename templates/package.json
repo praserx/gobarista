@@ -4,7 +4,9 @@
   "description": "GoBarista e-mail mjml.io template",
   "main": "index.js",
   "scripts": {
-    "build": "./node_modules/mjml/bin/mjml ./mjml/bill.cs.mjml -o ./dist/bill.cs.html"
+    "build-bill": "./node_modules/mjml/bin/mjml ./mjml/bill.cs.mjml -o ./dist/bill.cs.html",
+    "build-confirm": "./node_modules/mjml/bin/mjml ./mjml/confirm.cs.mjml -o ./dist/confirm.cs.html",
+    "build": "npm run build-bill && npm run build-confirm"
   },
   "author": "",
   "license": "ISC",

@@ -4,7 +4,10 @@
 - Added `PaymentConfirmation` to models.Bill
 - Added `Cash` to models.Period
 - Changed TotalAmount computation
+- Mail package reorganization
+- Added payment confirmation e-mail and command
 - Added command for all customers contacts print
+- Fixed bulk add and switched firstname and lastname
 
 # v1.1.1
 - Version fix

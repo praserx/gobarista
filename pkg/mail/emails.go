@@ -14,7 +14,7 @@ import (
 func SendBill(user models.User, period models.Period, bill models.Bill, totalCustomers int) error {
 	var err error
 	var pinfo qrgen.PaymentInfo
-	var tvars TemplateVars
+	var tvars BillTemplateVars
 
 	pinfo.IBAN = config.Get().Section("spayd").Key("iban").String()
 	pinfo.BIC = config.Get().Section("spayd").Key("bic").String()
@@ -29,6 +29,8 @@ func SendBill(user models.User, period models.Period, bill models.Bill, totalCus
 		totalMonths = period.TotalMonths
 	}
 
+	tvars.Title = config.Get().Section("messages").Key("company_name").String()
+	tvars.Subtitle = config.Get().Section("messages").Key("subtitle_msg").String()
 	tvars.BID = fmt.Sprintf("%d", bill.ID)
 	tvars.UID = fmt.Sprintf("%d", user.ID)
 	tvars.Name = fmt.Sprintf("%s %s", user.Firstname, user.Lastname)
@@ -57,6 +59,34 @@ func SendBill(user models.User, period models.Period, bill models.Bill, totalCus
 		Subject: config.Get().Section("messages").Key("subject_bill").String(),
 		Plain:   config.Get().Section("messages").Key("no_plaintext").String(),
 		HTML:    GetBillHTMLTemplate(tvars),
+	}
+
+	if err = SendMail(user.Email, es); err != nil {
+		logger.Error("cannot sent mail: " + err.Error())
+	}
+
+	return nil
+}
+
+func SendPaymentConfirmation(user models.User, period models.Period, bill models.Bill) error {
+	var err error
+	var tvars ConfirmationTemplateVars
+
+	tvars.Title = config.Get().Section("messages").Key("company_name").String()
+	tvars.Subtitle = config.Get().Section("messages").Key("subtitle_msg").String()
+	tvars.BID = fmt.Sprintf("%d", bill.ID)
+	tvars.PeriodFrom = period.DateFrom.Format("2. 1. 2006")
+	tvars.PeriodTo = period.DateTo.Format("2. 1. 2006")
+	tvars.Amount = fmt.Sprintf("%.2f", bill.Amount)
+
+	if err != nil {
+		return fmt.Errorf("could not generate qr code: %v", err)
+	}
+
+	es := &EmailSettings{
+		Subject: config.Get().Section("messages").Key("subject_confirm").String(),
+		Plain:   config.Get().Section("messages").Key("no_plaintext").String(),
+		HTML:    GetConfirmHTMLTemplate(tvars),
 	}
 
 	if err = SendMail(user.Email, es); err != nil {

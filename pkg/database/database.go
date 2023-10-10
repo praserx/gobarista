@@ -185,3 +185,11 @@ func UpdateBillOnPaid(bid uint) error {
 		Model(&bill).
 		Update("Paid", true).Error
 }
+
+func UpdateBillOnPaymentConfirmation(bid uint) error {
+	var bill models.Bill
+	gdb.First(&bill, bid)
+	return gdb.
+		Model(&bill).
+		Update("PaymentConfirmation", true).Error
+}

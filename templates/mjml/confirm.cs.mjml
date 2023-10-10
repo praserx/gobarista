@@ -1,0 +1,81 @@
+<mjml>
+    <mj-head>
+        <mj-raw>
+            <style type="text/css">
+                html, body {
+                    font-family: 'Lucida Console', monospace;
+                    color: #302b2a;
+                }
+                h1 { font-size: 22px; line-height: 26px; font-weight: bolder; }
+                h2 { font-size: 20px; line-height: 24px; font-weight: bolder; }
+                h3 { font-size: 18px; line-height: 22px;}
+                h4 { font-size: 16px; }
+                h1, h2, h3 {
+                    color: #302b2a;
+                    text-transform: uppercase;
+                }
+                p {
+                    color: #302b2a;
+                    line-height: 22px;
+                }
+                table {
+                    color: #302b2a;
+                    padding: 0px;
+                    margin: 0px;
+                }
+                a, a:link, a:visited, a:active {
+                    color: #302b2a;
+                    text-decoration: none;
+                    padding: 0px;
+                    margin: 0px;
+                }
+                a:hover {
+                    text-decoration: underline;
+                }
+            </style>
+        </mj-raw>
+        <mj-attributes>
+            <mj-text padding="0" font-size="16px" color="#ffffff" />
+            <mj-all font-family="'Lucida Console', monospace" />
+        </mj-attributes>
+    </mj-head>
+    <mj-body background-color="#d9d6d5">
+        <mj-section padding="50px 0px 35px 0px">
+            <mj-column vertical-align="middle">
+                <mj-text align="center" color="#302b2a" font-size="25px" font-weight="600" letter-spacing="2px">
+                    {{.Title}}
+                </mj-text>
+                <mj-text align="center" color="#302b2a" font-size="18px" font-weight="400" letter-spacing="2px" padding="10px 0px 0px 0px">
+                    {{.Subtitle}}
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding="30px 30px 5px 30px" background-color="#ffffff">
+            <mj-column>
+                <mj-text align="left" line-height="22px" font-size="16px">
+                    <p>Moc děkujeme za vaši platbu ve výši {{.Amount}},- Kč. Platba byla úspěšně spárována s vyúčtováním #{{.BID}} pro účtovací období {{.PeriodFrom}} - {{.PeriodTo}}.</p>
+                    <p>V případě jakýchkoliv dotazů nás neváhejte kontaktovat.</p>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding="5px 30px 30px 30px" background-color="#ffffff">
+            <mj-column>
+                <mj-text align="center" line-height="16px" font-size="13px">
+                    <p>Velice si ceníme vaší přízně a doufáme, že s námi zůstanete i&nbsp;další zúčtovací období. Kvalita naší práce je přímo úměrná počtu vypitých káv, proto nezapomínejte na pitný režim.</p>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding="0px 30px">
+            <mj-column>
+                <mj-text align="center" line-height="16px" font-size="11px">
+                    <p><a href="https://github.com/praserx/gobarista">GoBarista na GitHubu</a></p>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section>
+            <mj-column>
+                <mj-spacer height="40px" />
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>
