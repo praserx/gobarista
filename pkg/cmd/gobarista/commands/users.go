@@ -10,6 +10,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/praserx/gobarista/pkg/cmd/gobarista/flags"
 	"github.com/praserx/gobarista/pkg/cmd/gobarista/helpers"
 	"github.com/praserx/gobarista/pkg/database"
 	"github.com/praserx/gobarista/pkg/logger"
@@ -21,6 +23,9 @@ var Users = cli.Command{
 	Name:    "users",
 	Aliases: []string{"u"},
 	Usage:   "User management operations",
+	Flags: []cli.Flag{
+		&flags.FlagPrettyPrint,
+	},
 	Subcommands: []*cli.Command{
 		&UsersAdd,
 		&UsersAddBulk,
@@ -36,8 +41,17 @@ var Users = cli.Command{
 			return fmt.Errorf("error: cannot get users: %v", err.Error())
 		}
 
-		for _, user := range users {
-			fmt.Printf("%s %s\t\t%s\t\t%s\n", user.Firstname, user.Lastname, user.Email, user.Location)
+		if ctx.Bool("pretty") {
+			t := table.NewWriter()
+			t.AppendHeader(table.Row{"ID", "Name", "E-mail", "Location"})
+			for _, user := range users {
+				t.AppendRow(table.Row{user.ID, user.Firstname + " " + user.Lastname, user.Email, user.Location})
+			}
+			fmt.Println(t.Render())
+		} else {
+			for _, user := range users {
+				fmt.Printf("%d %s %s, %s, %s\n", user.ID, user.Firstname, user.Lastname, user.Email, user.Location)
+			}
 		}
 
 		return nil
@@ -144,7 +158,10 @@ var UsersAddBulk = cli.Command{
 var UsersContacts = cli.Command{
 	Name:    "contacts",
 	Aliases: []string{"c"},
-	Usage:   "Get e-mail contacts of all customers)",
+	Usage:   "Get e-mail contacts of all customers",
+	Flags: []cli.Flag{
+		&flags.FlagPrettyPrint,
+	},
 	Action: func(ctx *cli.Context) (err error) {
 		if err = helpers.SetupDatabase(ctx); err != nil {
 			return err
