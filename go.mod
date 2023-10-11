@@ -9,6 +9,7 @@ require (
 	github.com/jedib0t/go-pretty/v6 v6.4.8
 	github.com/praserx/mailgo v1.0.1
 	github.com/urfave/cli/v2 v2.25.7
+	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 	gopkg.in/ini.v1 v1.67.0
 	gorm.io/driver/sqlite v1.5.4
 	gorm.io/gorm v1.25.4
@@ -28,7 +29,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

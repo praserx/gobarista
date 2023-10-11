@@ -7,6 +7,7 @@ import (
 	"github.com/praserx/gobarista/pkg/database"
 	"github.com/praserx/gobarista/pkg/models"
 	"github.com/praserx/gobarista/pkg/stats/rank"
+	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 )
 
@@ -43,9 +44,9 @@ func GetStats(uid uint, currentPeriod models.Period, currentBill models.Bill, to
 func GetPeriodStats(currentPeriod models.Period, totalCustomers int) (stats PeriodStats) {
 	return PeriodStats{
 		TotalCustomers: totalCustomers,
-		TotalMonths:    GetTotalMonths(currentPeriod),
+		TotalMonths:    currentPeriod.TotalMonths,
 		TotalQuantity:  currentPeriod.TotalQuantity,
-		TotalAverage:   currentPeriod.TotalQuantity / GetTotalMonths(currentPeriod),
+		TotalAverage:   currentPeriod.TotalQuantity / currentPeriod.TotalMonths / totalCustomers,
 	}
 }
 
@@ -57,23 +58,36 @@ func GetUserStats(uid uint, currentPeriod models.Period, currentBill models.Bill
 		return UserStats{}, fmt.Errorf("cannot get billing period: %v", err)
 	}
 
-	prevPeriods, err := database.SelectAllPeriodsExceptSpecifiedPeriod(currentPeriod.ID)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return UserStats{}, fmt.Errorf("billing period not found")
-	} else if err != nil {
-		return UserStats{}, fmt.Errorf("cannot get billing period: %v", err)
-	}
-
+	var issuedPeriods []uint
 	for _, prevBill := range prevBills {
 		stats.PrevTotalCoffees += prevBill.Quantity
+		if !slices.Contains(issuedPeriods, prevBill.PeriodID) && prevBill.PeriodID != currentPeriod.ID {
+			issuedPeriods = append(issuedPeriods, prevBill.PeriodID)
+		}
+	}
+
+	var prevPeriods []models.Period
+	for _, issuedPeriod := range issuedPeriods {
+		prevPeriod, err := database.SelectPeriodByID(issuedPeriod)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return UserStats{}, fmt.Errorf("billing period not found")
+		} else if err != nil {
+			return UserStats{}, fmt.Errorf("cannot get billing period: %v", err)
+		}
+		prevPeriods = append(prevPeriods, prevPeriod)
 	}
 
 	for _, prevPeriod := range prevPeriods {
-		stats.PrevTotalMonths += GetTotalMonths(prevPeriod)
+		stats.PrevTotalMonths += prevPeriod.TotalMonths
 	}
 
-	stats.PrevAverageCoffees = stats.PrevTotalCoffees / stats.PrevTotalMonths
-	stats.CurrentAverageCoffees = (stats.PrevTotalCoffees + currentBill.Quantity) / (stats.PrevTotalMonths + GetTotalMonths(currentPeriod))
+	if stats.PrevTotalMonths == 0 {
+		stats.PrevAverageCoffees = 0
+	} else {
+		stats.PrevAverageCoffees = stats.PrevTotalCoffees / stats.PrevTotalMonths
+	}
+
+	stats.CurrentAverageCoffees = (stats.PrevTotalCoffees + currentBill.Quantity) / (stats.PrevTotalMonths + currentPeriod.TotalMonths)
 
 	if stats.PrevAverageCoffees > stats.CurrentAverageCoffees {
 		stats.CoffeeConsumptionTrend = "<span style=\"color: #cb4335;\">&#129126;</span>"
@@ -86,12 +100,4 @@ func GetUserStats(uid uint, currentPeriod models.Period, currentBill models.Bill
 	stats.Rank = rank.ComputeRank(stats.CurrentAverageCoffees)
 
 	return stats, nil
-}
-
-func GetTotalMonths(period models.Period) int {
-	totalMonths := 1
-	if period.TotalMonths != 0 {
-		totalMonths = period.TotalMonths
-	}
-	return totalMonths
 }

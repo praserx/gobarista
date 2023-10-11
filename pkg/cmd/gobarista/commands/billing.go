@@ -12,7 +12,6 @@ import (
 	"github.com/praserx/gobarista/pkg/logger"
 	"github.com/praserx/gobarista/pkg/mail"
 	"github.com/praserx/gobarista/pkg/models"
-	"github.com/praserx/gobarista/pkg/stats"
 	"github.com/urfave/cli/v2"
 	"gorm.io/gorm"
 )
@@ -57,8 +56,8 @@ var BillingNewPeriod = cli.Command{
 			return err
 		}
 
-		if ctx.NArg() != 4 {
-			return fmt.Errorf("error: too few arguments: requires (4), get (%d)", ctx.NArg())
+		if ctx.NArg() != 5 {
+			return fmt.Errorf("error: too few arguments: requires (5), get (%d)", ctx.NArg())
 		}
 
 		DateFrom, err := time.Parse("2006-01-02", ctx.Args().Get(0))
@@ -86,11 +85,16 @@ var BillingNewPeriod = cli.Command{
 			return fmt.Errorf("error: cannot parse float: %v", err)
 		}
 
+		totalMonths := 1
+		if int(DateTo.Sub(DateFrom).Hours()/24/30) > 0 {
+			totalMonths = int(DateTo.Sub(DateFrom).Hours() / 24 / 30)
+		}
+
 		period := models.Period{
 			DateFrom:         DateFrom,
 			DateTo:           DateTo,
 			DateOfIssue:      DateOfIssue,
-			TotalMonths:      int(DateTo.Sub(DateFrom).Hours() / 24 / 30),
+			TotalMonths:      totalMonths,
 			TotalAmount:      float32(TotalAmount),
 			AmountPerPackage: float32(AmountPerPackage),
 		}
@@ -200,7 +204,7 @@ var BillingPeriodSummary = cli.Command{
 		fmt.Printf("Total quantity:    %d\n", period.TotalQuantity)
 		fmt.Printf("Total amount:      %.2f\n", period.TotalAmount)
 		fmt.Printf("Total amount (wc): %.2f (total - cash)\n", period.TotalAmount)
-		fmt.Printf("Total months:      %d\n", stats.GetTotalMonths(period))
+		fmt.Printf("Total months:      %d\n", period.TotalMonths)
 		fmt.Printf("Cash:              %.2f\n", period.Cash)
 		fmt.Printf("Closed:            %t\n", period.Closed)
 		fmt.Printf("Total bills:       %d\n", len(bills))
@@ -383,7 +387,7 @@ var BillingConfirmPaymentBills = cli.Command{
 				return fmt.Errorf("error: cannot get user: user_id=%d: %v", bill.UserID, err)
 			}
 
-			if !bill.PaymentConfirmation {
+			if !bill.PaymentConfirmation && bill.Paid {
 				if err = mail.SendPaymentConfirmation(user, period, bill); err != nil {
 					logger.Error(fmt.Sprintf("error: billing e-mail has not been sent for bill_id=%d user_id=%d user_name='%s' user_email:'%s'", bill.ID, user.ID, user.Firstname+" "+user.Lastname, user.Email))
 				} else {
