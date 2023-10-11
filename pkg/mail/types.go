@@ -28,6 +28,7 @@ type BillTemplateVars struct {
 	PaymentCustomMessage string
 	Stats                stats.Stats
 	QRCode               string
+	AppVersion           string
 }
 
 // ConfirmationTemplateVars represents HTML template variables.
@@ -38,4 +39,5 @@ type ConfirmationTemplateVars struct {
 	PeriodFrom string
 	PeriodTo   string
 	Amount     string
+	AppVersion string
 }

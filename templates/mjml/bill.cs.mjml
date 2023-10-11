@@ -193,7 +193,7 @@
         <mj-section padding="0px 30px">
             <mj-column>
                 <mj-text align="center" line-height="16px" font-size="11px">
-                    <p><a href="https://github.com/praserx/gobarista">GoBarista na GitHubu</a></p>
+                    <p><a href="https://github.com/praserx/gobarista">GoBarista na GitHubu</a><br>Verze v{{.AppVersion}}</p>
                 </mj-text>
             </mj-column>
         </mj-section>

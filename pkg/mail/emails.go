@@ -9,6 +9,7 @@ import (
 	"github.com/praserx/gobarista/pkg/models"
 	"github.com/praserx/gobarista/pkg/qrgen"
 	"github.com/praserx/gobarista/pkg/stats"
+	"github.com/praserx/gobarista/pkg/version"
 )
 
 func SendBill(user models.User, period models.Period, bill models.Bill, totalCustomers int) error {
@@ -46,6 +47,7 @@ func SendBill(user models.User, period models.Period, bill models.Bill, totalCus
 	tvars.PaymentVS = fmt.Sprintf("%d", bill.ID)
 	tvars.PaymentCustomMessage = config.Get().Section("spayd").Key("custom_message").String()
 	tvars.QRCode, err = qrgen.GetQRCodeImageBase64(pinfo)
+	tvars.AppVersion = version.VERSION
 
 	if err != nil {
 		return fmt.Errorf("could not generate qr code: %v", err)
@@ -74,6 +76,7 @@ func SendPaymentConfirmation(user models.User, period models.Period, bill models
 	tvars.PeriodFrom = period.DateFrom.Format("2. 1. 2006")
 	tvars.PeriodTo = period.DateTo.Format("2. 1. 2006")
 	tvars.Amount = fmt.Sprintf("%.2f", bill.Amount)
+	tvars.AppVersion = version.VERSION
 
 	if err != nil {
 		return fmt.Errorf("could not generate qr code: %v", err)

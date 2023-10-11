@@ -98,7 +98,7 @@ func GetConfirmHTMLTemplate(vars ConfirmationTemplateVars) string {
 	var tmpl *template.Template
 	var buffer bytes.Buffer
 
-	if tmpl, err = template.ParseFS(resources.DirTemplates, resources.HTML_BILL_TEMPLATE_FULL_PATH); err != nil {
+	if tmpl, err = template.ParseFS(resources.DirTemplates, resources.HTML_CONFIRM_TEMPLATE_FULL_PATH); err != nil {
 		logger.Error("cannot parse template: " + err.Error())
 		return ""
 	}
