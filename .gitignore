@@ -2,7 +2,6 @@
 bin/*
 
 # Unnecessary MJML stuff
-templates/dist/*.html
 templates/node_modules
 
 # Resources public generated content
