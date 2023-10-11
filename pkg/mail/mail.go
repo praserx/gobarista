@@ -21,36 +21,6 @@ type Mailer struct {
 	mailer *mailgo.Mailer
 }
 
-// EmailSettings contains essential mail configuration and content.
-type EmailSettings struct {
-	Subject string
-	Plain   string
-	HTML    string
-}
-
-// TemplateVars represents HTML template variables.
-type TemplateVars struct {
-	BID                  string
-	UID                  string
-	Name                 string
-	Location             string
-	Credit               string
-	Rank                 string
-	PeriodFrom           string
-	PeriodTo             string
-	UnitPrice            string
-	Quantity             string
-	Amount               string
-	PaymentAN            string
-	PaymentVS            string
-	PaymentCustomMessage string
-	TotalMonths          string
-	TotalQuantity        string
-	TotalAverage         string
-	TotalCustomers       string
-	QRCode               string
-}
-
 // SetupMailer set ups mailer.
 func SetupMailer(opts ...Option) (err error) {
 	mail, err = NewMailer(opts...)
@@ -98,18 +68,37 @@ func NewMailer(opts ...Option) (mailer *Mailer, err error) {
 	return mailer, nil
 }
 
-// sendMail ...
+// SendMail ...
 func SendMail(recipient string, es *EmailSettings) (err error) {
 	return mail.mailer.SendMail([]string{recipient}, es.Subject, es.Plain, es.HTML)
 }
 
-// getBillHTMLTemplate ...
-func GetBillHTMLTemplate(vars TemplateVars) string {
+// GetBillHTMLTemplate ...
+func GetBillHTMLTemplate(vars BillTemplateVars) string {
 	var err error
 	var tmpl *template.Template
 	var buffer bytes.Buffer
 
 	if tmpl, err = template.ParseFS(resources.DirTemplates, resources.HTML_BILL_TEMPLATE_FULL_PATH); err != nil {
+		logger.Error("cannot parse template: " + err.Error())
+		return ""
+	}
+
+	if err = tmpl.Execute(&buffer, vars); err != nil {
+		logger.Error("cannot parse template: " + err.Error())
+		return ""
+	}
+
+	return buffer.String()
+}
+
+// GetBillHTMLTemplate ...
+func GetConfirmHTMLTemplate(vars ConfirmationTemplateVars) string {
+	var err error
+	var tmpl *template.Template
+	var buffer bytes.Buffer
+
+	if tmpl, err = template.ParseFS(resources.DirTemplates, resources.HTML_CONFIRM_TEMPLATE_FULL_PATH); err != nil {
 		logger.Error("cannot parse template: " + err.Error())
 		return ""
 	}

@@ -7,8 +7,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"slices"
 	"strings"
 
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/praserx/gobarista/pkg/cmd/gobarista/flags"
 	"github.com/praserx/gobarista/pkg/cmd/gobarista/helpers"
 	"github.com/praserx/gobarista/pkg/database"
 	"github.com/praserx/gobarista/pkg/logger"
@@ -17,11 +20,16 @@ import (
 )
 
 var Users = cli.Command{
-	Name:  "users",
-	Usage: "User management operations",
+	Name:    "users",
+	Aliases: []string{"u"},
+	Usage:   "User management operations",
+	Flags: []cli.Flag{
+		&flags.FlagPrettyPrint,
+	},
 	Subcommands: []*cli.Command{
 		&UsersAdd,
 		&UsersAddBulk,
+		&UsersContacts,
 	},
 	Action: func(ctx *cli.Context) (err error) {
 		if err = helpers.SetupDatabase(ctx); err != nil {
@@ -33,8 +41,17 @@ var Users = cli.Command{
 			return fmt.Errorf("error: cannot get users: %v", err.Error())
 		}
 
-		for _, user := range users {
-			fmt.Printf("%s %s\t\t%s\t\t%s\n", user.Firstname, user.Lastname, user.Email, user.Location)
+		if ctx.Bool("pretty") {
+			t := table.NewWriter()
+			t.AppendHeader(table.Row{"ID", "Name", "E-mail", "Location"})
+			for _, user := range users {
+				t.AppendRow(table.Row{user.ID, user.Firstname + " " + user.Lastname, user.Email, user.Location})
+			}
+			fmt.Println(t.Render())
+		} else {
+			for _, user := range users {
+				fmt.Printf("%d %s %s, %s, %s\n", user.ID, user.Firstname, user.Lastname, user.Email, user.Location)
+			}
 		}
 
 		return nil
@@ -78,7 +95,7 @@ var UsersAdd = cli.Command{
 
 var UsersAddBulk = cli.Command{
 	Name:      "add-bulk",
-	Usage:     "Add multiple users at once by csv file (name,e-mail,location,...)",
+	Usage:     "Add multiple users at once by csv file (eid,\"lastname firstname\",e-mail,location,...)",
 	ArgsUsage: "[file.csv]",
 	Action: func(ctx *cli.Context) (err error) {
 		if err = helpers.SetupDatabase(ctx); err != nil {
@@ -117,8 +134,8 @@ var UsersAddBulk = cli.Command{
 
 			user := models.User{
 				EID:       record[CSV_EID],
-				Firstname: strings.Fields(record[CSV_NAME])[0],
-				Lastname:  strings.Fields(record[CSV_NAME])[1],
+				Firstname: strings.Fields(record[CSV_NAME])[1],
+				Lastname:  strings.Fields(record[CSV_NAME])[0],
 				Email:     record[CSV_EMAIL],
 				Location:  record[CSV_LOCATION],
 			}
@@ -131,6 +148,56 @@ var UsersAddBulk = cli.Command{
 				logger.Info(fmt.Sprintf("user successfully created: new user id: %d", id))
 			} else {
 				logger.Info("user already exists")
+			}
+		}
+
+		return nil
+	},
+}
+
+var UsersContacts = cli.Command{
+	Name:    "contacts",
+	Aliases: []string{"c"},
+	Usage:   "Get e-mail contacts of all customers",
+	Flags: []cli.Flag{
+		&flags.FlagPrettyPrint,
+	},
+	Action: func(ctx *cli.Context) (err error) {
+		if err = helpers.SetupDatabase(ctx); err != nil {
+			return err
+		}
+
+		if ctx.NArg() != 0 {
+			return fmt.Errorf("error: too few arguments: requires (1), get (%d)", ctx.NArg())
+		}
+
+		bills, err := database.SelectAllBills()
+		if err != nil {
+			return fmt.Errorf("error: cannot get billing period: %v", err)
+		}
+
+		var contacts []string
+		for _, bill := range bills {
+			user, err := database.SelectUserByID(bill.UserID)
+			if err != nil {
+				logger.Error(fmt.Sprintf("error: cannot get user by id: user_id=%d: %v", bill.UserID, err.Error()))
+			}
+
+			if !slices.Contains(contacts, user.Email) {
+				contacts = append(contacts, user.Email)
+			}
+		}
+
+		if ctx.Bool("pretty") {
+			t := table.NewWriter()
+			t.AppendHeader(table.Row{"E-mail"})
+			for _, contact := range contacts {
+				t.AppendRow(table.Row{contact})
+			}
+			fmt.Println(t.Render())
+		} else {
+			for _, contact := range contacts {
+				fmt.Println(contact)
 			}
 		}
 
