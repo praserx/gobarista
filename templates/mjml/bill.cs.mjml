@@ -71,7 +71,7 @@
                         {{.Name}}</br>
                         {{.Location}}</br>
                         {{.Credit}}</br>
-                        {{.Rank}}
+                        {{.Stats.User.Rank}}
                     </p>
                 </mj-text>
             </mj-column>
@@ -138,7 +138,7 @@
             <mj-column>
                 <mj-text align="center" line-height="22px" font-size="16px">
                     <p>*****************************************************</p>
-                    <p>Souhrnné statisky za účtované období</p>
+                    <p>Statistiky a hodnocení za dané účtovací období</p>
                     <p>*****************************************************</p>
                 </mj-text>
                 <mj-table font-size="16px" padding="0px">
@@ -150,21 +150,35 @@
                         <td style="padding: 5px 0px;">Období do</td>
                         <td style="padding: 5px 0px; text-align:right;">{{.PeriodTo}}</td>
                     </tr>
+                </mj-table>
+                <mj-text align="left" line-height="22px" font-size="16px">
+                    <p><b>Souhrnné statitstiky za měsíce účtovaného období</b></p>
+                </mj-text>
+                <mj-table font-size="16px" padding="0px">
                     <tr>
-                        <td style="padding: 5px 0px;">Počet osob milujících kávu</td>
-                        <td style="padding: 5px 0px; text-align:right;">{{.TotalCustomers}}</td>
+                        <td style="padding: 5px 0px;">Počet zákazníků</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.Stats.Period.TotalCustomers}}</td>
                     </tr>
                     <tr>
                         <td style="padding: 5px 0px;">Celkem měsíců</td>
-                        <td style="padding: 5px 0px; text-align:right;">{{.TotalMonths}}</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.Stats.Period.TotalMonths}}</td>
                     </tr>
                     <tr>
                         <td style="padding: 5px 0px;">Celkem vypitých káv</td>
-                        <td style="padding: 5px 0px; text-align:right;">{{.TotalQuantity}}</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.Stats.Period.TotalQuantity}}</td>
                     </tr>
                     <tr>
-                        <td style="padding: 5px 0px;">Průměrný počet káv na osobu</td>
-                        <td style="padding: 5px 0px; text-align:right;">{{.TotalAverage}}</td>
+                        <td style="padding: 5px 0px;">Průměrný počet káv (osoba/měsíc)</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.Stats.Period.TotalAverage}}</td>
+                    </tr>
+                </mj-table>
+                <mj-text align="left" line-height="22px" font-size="16px">
+                    <p><b>Vaše osobní statistiky v daném obodí</b></p>
+                </mj-text>
+                <mj-table font-size="16px" padding="0px">
+                    <tr>
+                        <td style="padding: 5px 0px;">Průměr káv na měsíc</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.Stats.User.CurrentAverageCoffees}}&nbsp;{{.Stats.User.CoffeeConsumptionTrend}}</td>
                     </tr>
                 </mj-table>
             </mj-column>

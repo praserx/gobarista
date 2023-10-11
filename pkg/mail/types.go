@@ -1,5 +1,7 @@
 package mail
 
+import "github.com/praserx/gobarista/pkg/stats"
+
 // EmailSettings contains essential mail configuration and content.
 type EmailSettings struct {
 	Subject string
@@ -16,7 +18,6 @@ type BillTemplateVars struct {
 	Name                 string
 	Location             string
 	Credit               string
-	Rank                 string
 	PeriodFrom           string
 	PeriodTo             string
 	UnitPrice            string
@@ -25,10 +26,7 @@ type BillTemplateVars struct {
 	PaymentAN            string
 	PaymentVS            string
 	PaymentCustomMessage string
-	TotalMonths          string
-	TotalQuantity        string
-	TotalAverage         string
-	TotalCustomers       string
+	Stats                stats.Stats
 	QRCode               string
 }
 

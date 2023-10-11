@@ -12,6 +12,7 @@ import (
 	"github.com/praserx/gobarista/pkg/logger"
 	"github.com/praserx/gobarista/pkg/mail"
 	"github.com/praserx/gobarista/pkg/models"
+	"github.com/praserx/gobarista/pkg/stats"
 	"github.com/urfave/cli/v2"
 	"gorm.io/gorm"
 )
@@ -26,6 +27,7 @@ var Billing = cli.Command{
 		&BillingClosePeriod,
 		&BillingPeriodSummary,
 		&BillingIssueBills,
+		&BillingConfirmPaymentBills,
 	},
 	Action: func(ctx *cli.Context) (err error) {
 		if err = helpers.SetupDatabase(ctx); err != nil {
@@ -198,7 +200,7 @@ var BillingPeriodSummary = cli.Command{
 		fmt.Printf("Total quantity:    %d\n", period.TotalQuantity)
 		fmt.Printf("Total amount:      %.2f\n", period.TotalAmount)
 		fmt.Printf("Total amount (wc): %.2f (total - cash)\n", period.TotalAmount)
-		fmt.Printf("Total months:      %d\n", period.TotalMonths)
+		fmt.Printf("Total months:      %d\n", stats.GetTotalMonths(period))
 		fmt.Printf("Cash:              %.2f\n", period.Cash)
 		fmt.Printf("Closed:            %t\n", period.Closed)
 		fmt.Printf("Total bills:       %d\n", len(bills))
@@ -337,7 +339,7 @@ var BillingIssueBills = cli.Command{
 var BillingConfirmPaymentBills = cli.Command{
 	Name:      "confirm-payment",
 	Aliases:   []string{"c"},
-	Usage:     "Send payment confirmation for all paid bills (e-mail will not be sent for already notified users)",
+	Usage:     "Send payment confirmation for all paid bills for given period (e-mail will not be sent for already notified users)",
 	ArgsUsage: "[id]",
 	Action: func(ctx *cli.Context) (err error) {
 		if err = helpers.SetupDatabase(ctx); err != nil {
@@ -385,7 +387,7 @@ var BillingConfirmPaymentBills = cli.Command{
 				if err = mail.SendPaymentConfirmation(user, period, bill); err != nil {
 					logger.Error(fmt.Sprintf("error: billing e-mail has not been sent for bill_id=%d user_id=%d user_name='%s' user_email:'%s'", bill.ID, user.ID, user.Firstname+" "+user.Lastname, user.Email))
 				} else {
-					logger.Info(fmt.Sprintf("billing e-mail has been sent for bill_id=%d user_id=%d user_name='%s' user_email:'%s'", bill.ID, user.ID, user.Firstname+" "+user.Lastname, user.Email))
+					logger.Info(fmt.Sprintf("payment confirmation has been sent for bill_id=%d user_id=%d user_name='%s' user_email:'%s'", bill.ID, user.ID, user.Firstname+" "+user.Lastname, user.Email))
 
 					err = database.UpdateBillOnPaymentConfirmation(bill.ID)
 					if err != nil {

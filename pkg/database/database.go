@@ -122,6 +122,14 @@ func SelectPeriodByID(id uint) (period models.Period, err error) {
 	return period, result.Error
 }
 
+func SelectAllPeriodsExceptSpecifiedPeriod(pid uint) ([]models.Period, error) {
+	var periods []models.Period
+	result := gdb.
+		Where("id <> ?", pid).
+		Find(&periods)
+	return periods, result.Error
+}
+
 // InsertUser inserts user into the database and returns ID of the inserted
 // record and error if any occurs.
 func InsertPeriod(period models.Period) (int, error) {
@@ -149,11 +157,27 @@ func SelectAllBills() (bills []models.Bill, err error) {
 }
 
 func SelectAllBillsForPeriod(pid uint) ([]models.Bill, error) {
-	var bill []models.Bill
+	var bills []models.Bill
 	result := gdb.
 		Where("period_id = ?", pid).
-		Find(&bill)
-	return bill, result.Error
+		Find(&bills)
+	return bills, result.Error
+}
+
+func SelectAllBillsForUser(uid uint) ([]models.Bill, error) {
+	var bills []models.Bill
+	result := gdb.
+		Where("user_id = ?", uid).
+		Find(&bills)
+	return bills, result.Error
+}
+
+func SelectAllBillsForUserExceptSpecifiedPeriod(uid, pid uint) ([]models.Bill, error) {
+	var bills []models.Bill
+	result := gdb.
+		Where("user_id = ? AND period_id <> ?", uid, pid).
+		Find(&bills)
+	return bills, result.Error
 }
 
 func InsertBill(bill models.Bill) (int, error) {

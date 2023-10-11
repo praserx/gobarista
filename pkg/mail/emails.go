@@ -8,7 +8,7 @@ import (
 	"github.com/praserx/gobarista/pkg/logger"
 	"github.com/praserx/gobarista/pkg/models"
 	"github.com/praserx/gobarista/pkg/qrgen"
-	"github.com/praserx/gobarista/pkg/rank"
+	"github.com/praserx/gobarista/pkg/stats"
 )
 
 func SendBill(user models.User, period models.Period, bill models.Bill, totalCustomers int) error {
@@ -24,9 +24,9 @@ func SendBill(user models.User, period models.Period, bill models.Bill, totalCus
 	pinfo.Amount = fmt.Sprintf("%.2f", bill.Amount)
 	pinfo.VS = fmt.Sprintf("%d", bill.ID)
 
-	totalMonths := 1
-	if period.TotalMonths != 0 {
-		totalMonths = period.TotalMonths
+	stat, err := stats.GetStats(user.ID, period, bill, totalCustomers)
+	if err != nil {
+		return fmt.Errorf("could not get stats for bill")
 	}
 
 	tvars.Title = config.Get().Section("messages").Key("company_name").String()
@@ -36,16 +36,12 @@ func SendBill(user models.User, period models.Period, bill models.Bill, totalCus
 	tvars.Name = fmt.Sprintf("%s %s", user.Firstname, user.Lastname)
 	tvars.Location = user.Location
 	tvars.Credit = fmt.Sprintf("%d", user.Credit)
-	tvars.Rank = rank.ComputeRank(bill.Quantity / totalMonths)
 	tvars.PeriodFrom = period.DateFrom.Format("2. 1. 2006")
 	tvars.PeriodTo = period.DateTo.Format("2. 1. 2006")
 	tvars.UnitPrice = fmt.Sprintf("%.2f", period.UnitPrice)
 	tvars.Quantity = fmt.Sprintf("%d", bill.Quantity)
 	tvars.Amount = fmt.Sprintf("%.2f", bill.Amount)
-	tvars.TotalMonths = fmt.Sprintf("%d", totalMonths)
-	tvars.TotalQuantity = fmt.Sprintf("%d", period.TotalQuantity)
-	tvars.TotalAverage = fmt.Sprintf("%d", period.TotalQuantity/totalCustomers)
-	tvars.TotalCustomers = fmt.Sprintf("%d", totalCustomers)
+	tvars.Stats = stat
 	tvars.PaymentAN = config.Get().Section("spayd").Key("an").String()
 	tvars.PaymentVS = fmt.Sprintf("%d", bill.ID)
 	tvars.PaymentCustomMessage = config.Get().Section("spayd").Key("custom_message").String()
