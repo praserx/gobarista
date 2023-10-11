@@ -63,5 +63,10 @@ gobarista -c .local/conf.ini users add 001001 John Doe johndoe@example.com Tokyo
 ### Billing
 
 ```bash
-TODO
+gobarista -c .local/conf.ini billing period-create 2023-10-01 2023-10-30 2023-11-01 500 250
+gobarista -c .local/conf.ini billing add-bill 1 1 15
+gobarista -c .local/conf.ini billing period-close 1
+gobarista -c .local/conf.ini billing period-summary 1
+gobarista -c .local/conf.ini billing issue-bills 1
+gobarista -c .local/conf.ini billing confirm-payment 1
 ```
