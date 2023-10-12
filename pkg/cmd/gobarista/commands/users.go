@@ -24,7 +24,7 @@ var Users = cli.Command{
 	Aliases: []string{"u"},
 	Usage:   "User management operations",
 	Flags: []cli.Flag{
-		&flags.FlagPrettyPrint,
+		&flags.FlagPlainPrint,
 	},
 	Subcommands: []*cli.Command{
 		&UsersAdd,
@@ -41,7 +41,7 @@ var Users = cli.Command{
 			return fmt.Errorf("error: cannot get users: %v", err.Error())
 		}
 
-		if ctx.Bool("pretty") {
+		if !ctx.Bool("plain") {
 			t := table.NewWriter()
 			t.AppendHeader(table.Row{"ID", "Name", "E-mail", "Location"})
 			for _, user := range users {
@@ -160,7 +160,7 @@ var UsersContacts = cli.Command{
 	Aliases: []string{"c"},
 	Usage:   "Get e-mail contacts of all customers",
 	Flags: []cli.Flag{
-		&flags.FlagPrettyPrint,
+		&flags.FlagPlainPrint,
 	},
 	Action: func(ctx *cli.Context) (err error) {
 		if err = helpers.SetupDatabase(ctx); err != nil {
@@ -188,7 +188,7 @@ var UsersContacts = cli.Command{
 			}
 		}
 
-		if ctx.Bool("pretty") {
+		if !ctx.Bool("plain") {
 			t := table.NewWriter()
 			t.AppendHeader(table.Row{"E-mail"})
 			for _, contact := range contacts {

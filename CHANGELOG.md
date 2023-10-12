@@ -1,3 +1,8 @@
+# v1.3.0
+- Added pay command
+- Added pay-csv command
+- Minor fixes and changes
+
 # v1.2.0
 - Added CI CodeQL and Staticcheck
 - Added `AmountPerPackage` to models.Period
