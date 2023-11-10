@@ -1,6 +1,8 @@
 # v1.3.0
 - Added pay command
 - Added pay-csv command
+- Added notification command (debt notification)
+- Added e-mail templates for payment confirmation and waiting payment notification 
 - Minor fixes and changes
 
 # v1.2.0
