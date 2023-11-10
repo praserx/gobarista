@@ -1,3 +1,6 @@
+# v1.3.1
+- Unpaid template fix
+
 # v1.3.0
 - Added pay command
 - Added pay-csv command
