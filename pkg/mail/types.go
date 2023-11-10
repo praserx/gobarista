@@ -41,3 +41,14 @@ type ConfirmationTemplateVars struct {
 	Amount     string
 	AppVersion string
 }
+
+// UnpaidTemplateVars represents HTML template variables.
+type UnpaidTemplateVars struct {
+	Title      string
+	Subtitle   string
+	BID        string
+	PeriodFrom string
+	PeriodTo   string
+	Amount     string
+	AppVersion string
+}

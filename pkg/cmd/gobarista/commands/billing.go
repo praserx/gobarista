@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/praserx/gobarista/pkg/cmd/gobarista/flags"
 	"github.com/praserx/gobarista/pkg/cmd/gobarista/helpers"
 	"github.com/praserx/gobarista/pkg/database"
 	"github.com/praserx/gobarista/pkg/logger"
@@ -25,6 +26,9 @@ var Billing = cli.Command{
 	Name:    "billing",
 	Aliases: []string{"b"},
 	Usage:   "Billing periods and bills management",
+	Flags: []cli.Flag{
+		&flags.FlagPlainPrint,
+	},
 	Subcommands: []*cli.Command{
 		&BillingPeriods,
 		&BillingBills,
@@ -34,13 +38,22 @@ var Billing = cli.Command{
 			return err
 		}
 
-		users, err := database.SelectAllUsers()
+		bills, err := database.SelectAllBills()
 		if err != nil {
-			return fmt.Errorf("error: cannot get users: %v", err.Error())
+			return fmt.Errorf("error: cannot get bills: %v", err.Error())
 		}
 
-		for _, user := range users {
-			fmt.Printf("%s %s\t\t%s\t\t%s\n", user.Firstname, user.Lastname, user.Email, user.Location)
+		if !ctx.Bool("plain") {
+			t := table.NewWriter()
+			t.AppendHeader(table.Row{"Bill ID", "Period ID", "Amount", "Issued", "Paid", "Confirmed"})
+			for _, bill := range bills {
+				t.AppendRow(table.Row{bill.ID, bill.PeriodID, bill.Amount, bill.Issued, bill.Paid, bill.PaymentConfirmation})
+			}
+			fmt.Println(t.Render())
+		} else {
+			for _, bill := range bills {
+				fmt.Printf("%d %d %.2f %t %t %t\n", bill.ID, bill.PeriodID, bill.Amount, bill.Issued, bill.Paid, bill.PaymentConfirmation)
+			}
 		}
 
 		return nil
@@ -254,6 +267,7 @@ var BillingBills = cli.Command{
 		&BillingBillsPay,
 		&BillingBillsPayCSV,
 		&BillingBillsConfirmPayment,
+		&BillingBillsUnpaidNotification,
 	},
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
@@ -565,7 +579,7 @@ var BillingBillsConfirmPayment = cli.Command{
 	Name:      "confirm",
 	Aliases:   []string{"c"},
 	Usage:     "Send payment confirmation for all paid bills for given period (e-mail will not be sent for already notified users)",
-	ArgsUsage: "[id]",
+	ArgsUsage: "[period_id]",
 	Action: func(ctx *cli.Context) (err error) {
 		if err = helpers.SetupDatabase(ctx); err != nil {
 			return err
@@ -618,6 +632,66 @@ var BillingBillsConfirmPayment = cli.Command{
 					if err != nil {
 						return fmt.Errorf("error: cannot update bill: bill_id=%d: %v", bill.ID, err)
 					}
+				}
+			}
+		}
+
+		return nil
+	},
+}
+
+var BillingBillsUnpaidNotification = cli.Command{
+	Name:      "notify",
+	Aliases:   []string{"n"},
+	Usage:     "Send notification e-mail for unpaid debt for all unpaid bills for given period",
+	ArgsUsage: "[period_id]",
+	Action: func(ctx *cli.Context) (err error) {
+		if err = helpers.SetupDatabase(ctx); err != nil {
+			return err
+		}
+
+		if err = helpers.SetupMail(ctx); err != nil {
+			return err
+		}
+
+		if ctx.NArg() != 1 {
+			return fmt.Errorf("error: too few arguments: requires (1), get (%d)", ctx.NArg())
+		}
+
+		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 64)
+		if err != nil {
+			return fmt.Errorf("error: cannot parse uint: %v", err)
+		}
+
+		period, err := database.SelectPeriodByID(uint(pid))
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("error: billing period not found")
+		} else if err != nil {
+			return fmt.Errorf("error: cannot get billing period: %v", err)
+		}
+
+		if !period.Closed {
+			return fmt.Errorf("error: cannot send notification: period is not closed")
+		}
+
+		bills, err := database.SelectAllBillsForPeriod(uint(pid))
+		if err != nil {
+			return fmt.Errorf("error: cannot get bills for given period: %v", err)
+		}
+
+		for _, bill := range bills {
+			user, err := database.SelectUserByID(bill.UserID)
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return fmt.Errorf("error: user for giver bill is not found: user_id=%d", bill.UserID)
+			} else if err != nil {
+				return fmt.Errorf("error: cannot get user: user_id=%d: %v", bill.UserID, err)
+			}
+
+			if !bill.Paid {
+				if err = mail.SendUnpaidNotification(user, period, bill); err != nil {
+					logger.Error(fmt.Sprintf("error: notification e-mail has not been sent for bill_id=%d user_id=%d user_name='%s' user_email:'%s'", bill.ID, user.ID, user.Firstname+" "+user.Lastname, user.Email))
+				} else {
+					logger.Info(fmt.Sprintf("debt notification has been sent for bill_id=%d user_id=%d user_name='%s' user_email:'%s'", bill.ID, user.ID, user.Firstname+" "+user.Lastname, user.Email))
 				}
 			}
 		}

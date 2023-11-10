@@ -94,3 +94,32 @@ func SendPaymentConfirmation(user models.User, period models.Period, bill models
 
 	return nil
 }
+
+func SendUnpaidNotification(user models.User, period models.Period, bill models.Bill) error {
+	var err error
+	var tvars UnpaidTemplateVars
+
+	tvars.Title = config.Get().Section("messages").Key("company_name").String()
+	tvars.Subtitle = config.Get().Section("messages").Key("subtitle_msg").String()
+	tvars.BID = fmt.Sprintf("%d", bill.ID)
+	tvars.PeriodFrom = period.DateFrom.Format("2. 1. 2006")
+	tvars.PeriodTo = period.DateTo.Format("2. 1. 2006")
+	tvars.Amount = fmt.Sprintf("%.2f", bill.Amount)
+	tvars.AppVersion = version.VERSION
+
+	if err != nil {
+		return fmt.Errorf("could not generate qr code: %v", err)
+	}
+
+	es := &EmailSettings{
+		Subject: config.Get().Section("messages").Key("subject_unpaid").String(),
+		Plain:   config.Get().Section("messages").Key("no_plaintext").String(),
+		HTML:    GetUnpaidHTMLTemplate(tvars),
+	}
+
+	if err = SendMail(user.Email, es); err != nil {
+		logger.Error("cannot sent mail: " + err.Error())
+	}
+
+	return nil
+}

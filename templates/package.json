@@ -6,7 +6,8 @@
   "scripts": {
     "build-bill": "./node_modules/mjml/bin/mjml ./mjml/bill.cs.mjml -o ./dist/bill.cs.html",
     "build-confirm": "./node_modules/mjml/bin/mjml ./mjml/confirm.cs.mjml -o ./dist/confirm.cs.html",
-    "build": "npm run build-bill && npm run build-confirm"
+    "build-unpaid": "./node_modules/mjml/bin/mjml ./mjml/unpaid.cs.mjml -o ./dist/unpaid.cs.html",
+    "build": "npm run build-bill && npm run build-confirm && npm run build-unpaid"
   },
   "author": "",
   "license": "ISC",
