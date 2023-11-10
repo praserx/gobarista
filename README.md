@@ -22,7 +22,6 @@ database = /path/to/my/sqlite3/database/db.sqlite3
 
 [spayd]
 an = "1234567890/1234"
-iban = "CZ7830300000001653272024"
 iban = "CZ0000000000000000001234"
 bic = "YYXXCZPP"
 currency = czk

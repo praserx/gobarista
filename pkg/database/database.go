@@ -117,6 +117,21 @@ func InsertUser(user models.User) (int, error) {
 	return int(obj.ID), result.Error
 }
 
+func UpdateUserName(uid uint, firstname, lastname string) error {
+	var user models.User
+	gdb.First(&user, uid)
+	return gdb.
+		Model(&user).
+		Updates(models.User{Firstname: firstname, Lastname: lastname}).Error
+}
+
+func SelectAllPeriods() ([]models.Period, error) {
+	var periods []models.Period
+	result := gdb.
+		Find(&periods)
+	return periods, result.Error
+}
+
 func SelectPeriodByID(id uint) (period models.Period, err error) {
 	result := gdb.First(&period, id)
 	return period, result.Error

@@ -110,3 +110,22 @@ func GetConfirmHTMLTemplate(vars ConfirmationTemplateVars) string {
 
 	return buffer.String()
 }
+
+// GetUnpaidHTMLTemplate ...
+func GetUnpaidHTMLTemplate(vars UnpaidTemplateVars) string {
+	var err error
+	var tmpl *template.Template
+	var buffer bytes.Buffer
+
+	if tmpl, err = template.ParseFS(resources.DirTemplates, resources.HTML_UNPAID_TEMPLATE_FULL_PATH); err != nil {
+		logger.Error("cannot parse template: " + err.Error())
+		return ""
+	}
+
+	if err = tmpl.Execute(&buffer, vars); err != nil {
+		logger.Error("cannot parse template: " + err.Error())
+		return ""
+	}
+
+	return buffer.String()
+}

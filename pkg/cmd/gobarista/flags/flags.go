@@ -10,8 +10,8 @@ var FlagConfig = cli.StringFlag{
 	Aliases: []string{"c"},
 }
 
-var FlagPrettyPrint = cli.BoolFlag{
-	Name:    "pretty",
+var FlagPlainPrint = cli.BoolFlag{
+	Name:    "plain",
 	Aliases: []string{"p"},
-	Usage:   "print formatted output",
+	Usage:   "print plaintext output (turn off pretty print)",
 }
