@@ -167,7 +167,7 @@ var BillingPeriodsClose = cli.Command{
 			return fmt.Errorf("error: too few arguments: requires (1), get (%d)", ctx.NArg())
 		}
 
-		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 64)
+		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 32)
 		if err != nil {
 			return fmt.Errorf("error: cannot parse uint: %v", err)
 		}
@@ -225,7 +225,7 @@ var BillingPeriodsSummary = cli.Command{
 			return fmt.Errorf("error: too few arguments: requires (1), get (%d)", ctx.NArg())
 		}
 
-		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 64)
+		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 32)
 		if err != nil {
 			return fmt.Errorf("error: cannot parse uint: %v", err)
 		}
@@ -372,7 +372,7 @@ var BillingBillsAdd = cli.Command{
 			return fmt.Errorf("error: too few arguments: requires (4), get (%d)", ctx.NArg())
 		}
 
-		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 64)
+		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 32)
 		if err != nil {
 			return fmt.Errorf("error: cannot parse uint: %v", err)
 		}
@@ -440,7 +440,7 @@ var BillingBillsIssue = cli.Command{
 			return fmt.Errorf("error: too few arguments: requires (1), get (%d)", ctx.NArg())
 		}
 
-		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 64)
+		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 32)
 		if err != nil {
 			return fmt.Errorf("error: cannot parse uint: %v", err)
 		}
@@ -499,7 +499,7 @@ var BillingBillsPay = cli.Command{
 			return fmt.Errorf("error: too few arguments: requires (1), get (%d)", ctx.NArg())
 		}
 
-		bid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 64)
+		bid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 32)
 		if err != nil {
 			return fmt.Errorf("error: cannot parse uint: %v", err)
 		}
@@ -593,7 +593,7 @@ var BillingBillsConfirmPayment = cli.Command{
 			return fmt.Errorf("error: too few arguments: requires (1), get (%d)", ctx.NArg())
 		}
 
-		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 64)
+		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 32)
 		if err != nil {
 			return fmt.Errorf("error: cannot parse uint: %v", err)
 		}
@@ -658,7 +658,7 @@ var BillingBillsUnpaidNotification = cli.Command{
 			return fmt.Errorf("error: too few arguments: requires (1), get (%d)", ctx.NArg())
 		}
 
-		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 64)
+		pid, err := strconv.ParseUint(ctx.Args().Get(0), 10, 32)
 		if err != nil {
 			return fmt.Errorf("error: cannot parse uint: %v", err)
 		}
