@@ -6,7 +6,7 @@ GOBUILD=CGO_ENABLED=1 CGO_CFLAGS="-g -O2 -Wno-return-local-addr" $(GOCMD) build 
 GOTESTS=CGO_ENABLED=1 CGO_CFLAGS="-g -O2 -Wno-return-local-addr" $(GOCMD) test
 GOCLEAN=$(GOCMD) clean
 
-VERSION=1.3.1
+VERSION=1.4.0
 
 DIRECTORY_BIN=bin
 DIRECTORY_TMP=./resources/templates

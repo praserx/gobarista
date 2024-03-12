@@ -1,3 +1,8 @@
+# v1.4.0
+- Pay bill by credit (use credit first)
+- Added cash arg to period initialization
+- Mail template update
+
 # v1.3.1
 - Unpaid template fix
 

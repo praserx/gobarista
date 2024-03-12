@@ -23,6 +23,8 @@ type BillTemplateVars struct {
 	UnitPrice            string
 	Quantity             string
 	Amount               string
+	CreditPay            string
+	Payment              string
 	PaymentAN            string
 	PaymentVS            string
 	PaymentCustomMessage string
@@ -38,7 +40,7 @@ type ConfirmationTemplateVars struct {
 	BID        string
 	PeriodFrom string
 	PeriodTo   string
-	Amount     string
+	Payment    string
 	AppVersion string
 }
 
@@ -49,6 +51,6 @@ type UnpaidTemplateVars struct {
 	BID        string
 	PeriodFrom string
 	PeriodTo   string
-	Amount     string
+	Payment    string
 	AppVersion string
 }

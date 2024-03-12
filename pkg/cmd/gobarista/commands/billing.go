@@ -94,14 +94,14 @@ var BillingPeriodsNew = cli.Command{
 	Name:      "new",
 	Aliases:   []string{"n"},
 	Usage:     "Add new billing period",
-	ArgsUsage: "[from(2006-01-02) to(2006-01-02) issued(2006-01-02) total_amount amount_per_package]",
+	ArgsUsage: "[from(2006-01-02) to(2006-01-02) issued(2006-01-02) total_amount amount_per_package cash]",
 	Action: func(ctx *cli.Context) (err error) {
 		if err = helpers.SetupDatabase(ctx); err != nil {
 			return err
 		}
 
-		if ctx.NArg() != 5 {
-			return fmt.Errorf("error: too few arguments: requires (5), get (%d)", ctx.NArg())
+		if ctx.NArg() != 6 {
+			return fmt.Errorf("error: too few arguments: requires (6), get (%d)", ctx.NArg())
 		}
 
 		DateFrom, err := time.Parse("2006-01-02", ctx.Args().Get(0))
@@ -129,6 +129,11 @@ var BillingPeriodsNew = cli.Command{
 			return fmt.Errorf("error: cannot parse float: %v", err)
 		}
 
+		Cash, err := strconv.ParseFloat(ctx.Args().Get(5), 32)
+		if err != nil {
+			return fmt.Errorf("error: cannot parse float: %v", err)
+		}
+
 		totalMonths := 1
 		if int(DateTo.Sub(DateFrom).Hours()/24/30) > 0 {
 			totalMonths = int(DateTo.Sub(DateFrom).Hours() / 24 / 30)
@@ -141,6 +146,7 @@ var BillingPeriodsNew = cli.Command{
 			TotalMonths:      totalMonths,
 			TotalAmount:      float32(TotalAmount),
 			AmountPerPackage: float32(AmountPerPackage),
+			Cash:             float32(Cash),
 		}
 
 		id, err := database.InsertPeriod(period)
@@ -199,7 +205,39 @@ var BillingPeriodsClose = cli.Command{
 
 		for _, bill := range bills {
 			amount := float32(bill.Quantity) * unitPrice
-			err = database.UpdateBillOnPeriodClose(bill.ID, amount)
+			payment := amount
+
+			user, err := database.SelectUserByID(bill.UserID)
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return fmt.Errorf("error: user for giver bill is not found: user_id=%d", bill.UserID)
+			} else if err != nil {
+				return fmt.Errorf("error: cannot get user: user_id=%d: %v", bill.UserID, err)
+			}
+
+			if user.Credit != 0 {
+				var ballance float32
+				if float32(user.Credit) <= amount {
+					payment = amount - float32(user.Credit)
+					ballance = amount - payment
+				} else {
+					payment = 0
+					ballance = amount
+				}
+
+				err = database.WithdrawMoney(bill.UserID, ballance)
+				if err != nil {
+					logger.Error(fmt.Sprintf("error: cannot withdraw credit for user: bill_id=%d user_id=%d ballance=%.2f: %v", bill.ID, bill.UserID, ballance, err.Error()))
+				} else {
+					logger.Info(fmt.Sprintf("credit has been reduced for user: bill_id=%d user_id=%d reduction=%.2f", bill.ID, bill.UserID, ballance))
+				}
+
+				_, err = database.InsertTransaction(models.Transaction{Type: models.WITHDRAW, Amount: ballance, UserID: bill.UserID})
+				if err != nil {
+					logger.Error(fmt.Sprintf("error: cannot insert withdraw transaction for user: bill_id=%d user_id=%d ballance=%.2f: %v", bill.ID, bill.UserID, ballance, err.Error()))
+				}
+			}
+
+			err = database.UpdateBillOnPeriodClose(bill.ID, amount, payment)
 			if err != nil {
 				logger.Error(fmt.Sprintf("error: cannot update bill with bill_id=%d: %v", bill.ID, err.Error()))
 			} else {
@@ -247,7 +285,7 @@ var BillingPeriodsSummary = cli.Command{
 		fmt.Printf("Unit price:        %.2f\n", period.UnitPrice)
 		fmt.Printf("Total quantity:    %d\n", period.TotalQuantity)
 		fmt.Printf("Total amount:      %.2f\n", period.TotalAmount)
-		fmt.Printf("Total amount (wc): %.2f (total - cash)\n", period.TotalAmount)
+		fmt.Printf("Total amount (wc): %.2f (total - cash)\n", period.TotalAmount-period.Cash)
 		fmt.Printf("Total months:      %d\n", period.TotalMonths)
 		fmt.Printf("Cash:              %.2f\n", period.Cash)
 		fmt.Printf("Closed:            %t\n", period.Closed)

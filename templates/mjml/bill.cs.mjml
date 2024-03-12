@@ -104,6 +104,15 @@
                         <td style="padding: 5px 0px;text-align:right;">{{.Amount}}</td>
                     </tr>
                 </mj-table>
+                <mj-raw>{{ if ne .Amount .Payment }}
+                </mj-raw>
+                <mj-text align="center" line-height="22px" font-size="16px">
+                    <p>Část pohledávky byla zaplacena z kreditu zákazníka.
+                    Stačí doplatit zbývající sumu. Z kreditu bylo zaplaceno {{.CreditPay}},- Kč.</p>
+                </mj-text>
+                <mj-raw>
+                {{ end }}
+                </mj-raw>
             </mj-column>
         </mj-section>
         <mj-section padding="5px 30px" background-color="#ffffff">
@@ -113,6 +122,9 @@
                     <p>Informace o platbě</p>
                     <p>*****************************************************</p>
                 </mj-text>
+                <mj-raw>
+                {{ if ne .Payment "0.00" }}
+                </mj-raw>
                 <mj-table font-size="16px" padding="0px">
                     <tr>
                         <td style="padding: 5px 0px;">Číslo účtu</td>
@@ -121,6 +133,10 @@
                     <tr>
                         <td style="padding: 5px 0px;">Variabilní symbol</td>
                         <td style="padding: 5px 0px; text-align:right;">{{.PaymentVS}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0px;">Částka</td>
+                        <td style="padding: 5px 0px; text-align:right;">{{.Payment}}</td>
                     </tr>
                 </mj-table>
                 <mj-text align="center">
@@ -132,6 +148,15 @@
                 <mj-text align="center" line-height="22px" font-size="16px">
                     <p><b>Před odesláním platby prosím ověřte platební údaje (číslo účtu, variabilní symbol).</b></p>
                 </mj-text>
+                <mj-raw>
+                {{ else }}
+                </mj-raw>
+                <mj-text align="center" line-height="22px" font-size="16px">
+                    <p><b>Není třeba nic platit! Vše bylo uhrazeno z vašeho kreditu!</b></p>
+                </mj-text>
+                <mj-raw>
+                {{ end }}
+                </mj-raw>
             </mj-column>
         </mj-section>
         <mj-section padding="5px 30px" background-color="#ffffff">

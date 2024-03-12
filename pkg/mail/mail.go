@@ -69,7 +69,7 @@ func NewMailer(opts ...Option) (mailer *Mailer, err error) {
 }
 
 // SendMail ...
-func SendMail(recipient string, es *EmailSettings) (err error) {
+func SendMail(recipient string, es *EmailSettings) (err []error) {
 	return mail.mailer.SendMail([]string{recipient}, es.Subject, es.Plain, es.HTML)
 }
 

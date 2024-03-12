@@ -53,7 +53,7 @@
         <mj-section padding="30px 30px 5px 30px" background-color="#ffffff">
             <mj-column>
                 <mj-text align="left" line-height="22px" font-size="16px">
-                    <p>Velice se omlouváme, ale stále čekáme na vaši platbu ve výši {{.Amount}},- Kč. Platba má identifikátor #{{.BID}} a byla vystavena pro účtovací období {{.PeriodFrom}} - {{.PeriodTo}}.</p>
+                    <p>Velice se omlouváme, ale stále čekáme na vaši platbu ve výši {{.Payment}},- Kč. Platba má identifikátor #{{.BID}} a byla vystavena pro účtovací období {{.PeriodFrom}} - {{.PeriodTo}}.</p>
                     <p>Je možné, že jste platbu již provedli, ale nedošlo k úspěšnému spárování platby. Proto nás v případě jakýchkoliv dotazů neváhejte kontaktovat.</p>
                 </mj-text>
             </mj-column>
