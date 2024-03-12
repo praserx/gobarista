@@ -22,7 +22,7 @@ func SendBill(user models.User, period models.Period, bill models.Bill, totalCus
 	pinfo.Currency = config.Get().Section("spayd").Key("currency").String()
 	pinfo.RecipientName = config.Get().Section("spayd").Key("recipient_name").String()
 	pinfo.Message = config.Get().Section("spayd").Key("message").String()
-	pinfo.Amount = fmt.Sprintf("%.2f", bill.Amount)
+	pinfo.Amount = fmt.Sprintf("%.2f", bill.Payment) // (amount - credit)
 	pinfo.VS = fmt.Sprintf("%d", bill.ID)
 
 	stat, err := stats.GetStats(user.ID, period, bill, totalCustomers)
@@ -42,7 +42,9 @@ func SendBill(user models.User, period models.Period, bill models.Bill, totalCus
 	tvars.UnitPrice = fmt.Sprintf("%.2f", period.UnitPrice)
 	tvars.Quantity = fmt.Sprintf("%d", bill.Quantity)
 	tvars.Amount = fmt.Sprintf("%.2f", bill.Amount)
+	tvars.CreditPay = fmt.Sprintf("%.2f", bill.Amount-bill.Payment)
 	tvars.Stats = stat
+	tvars.Payment = fmt.Sprintf("%.2f", bill.Payment)
 	tvars.PaymentAN = config.Get().Section("spayd").Key("an").String()
 	tvars.PaymentVS = fmt.Sprintf("%d", bill.ID)
 	tvars.PaymentCustomMessage = config.Get().Section("spayd").Key("custom_message").String()
@@ -59,15 +61,16 @@ func SendBill(user models.User, period models.Period, bill models.Bill, totalCus
 		HTML:    GetBillHTMLTemplate(tvars),
 	}
 
-	if err = SendMail(user.Email, es); err != nil {
-		logger.Error("cannot sent mail: " + err.Error())
+	if errs := SendMail(user.Email, es); len(errs) > 0 {
+		for _, err := range errs {
+			logger.Error("cannot sent mail: " + err.Error())
+		}
 	}
 
 	return nil
 }
 
 func SendPaymentConfirmation(user models.User, period models.Period, bill models.Bill) error {
-	var err error
 	var tvars ConfirmationTemplateVars
 
 	tvars.Title = config.Get().Section("messages").Key("company_name").String()
@@ -75,12 +78,8 @@ func SendPaymentConfirmation(user models.User, period models.Period, bill models
 	tvars.BID = fmt.Sprintf("%d", bill.ID)
 	tvars.PeriodFrom = period.DateFrom.Format("2. 1. 2006")
 	tvars.PeriodTo = period.DateTo.Format("2. 1. 2006")
-	tvars.Amount = fmt.Sprintf("%.2f", bill.Amount)
+	tvars.Payment = fmt.Sprintf("%.2f", bill.Payment)
 	tvars.AppVersion = version.VERSION
-
-	if err != nil {
-		return fmt.Errorf("could not generate qr code: %v", err)
-	}
 
 	es := &EmailSettings{
 		Subject: config.Get().Section("messages").Key("subject_confirm").String(),
@@ -88,15 +87,16 @@ func SendPaymentConfirmation(user models.User, period models.Period, bill models
 		HTML:    GetConfirmHTMLTemplate(tvars),
 	}
 
-	if err = SendMail(user.Email, es); err != nil {
-		logger.Error("cannot sent mail: " + err.Error())
+	if errs := SendMail(user.Email, es); len(errs) > 0 {
+		for _, err := range errs {
+			logger.Error("cannot sent mail: " + err.Error())
+		}
 	}
 
 	return nil
 }
 
 func SendUnpaidNotification(user models.User, period models.Period, bill models.Bill) error {
-	var err error
 	var tvars UnpaidTemplateVars
 
 	tvars.Title = config.Get().Section("messages").Key("company_name").String()
@@ -104,12 +104,8 @@ func SendUnpaidNotification(user models.User, period models.Period, bill models.
 	tvars.BID = fmt.Sprintf("%d", bill.ID)
 	tvars.PeriodFrom = period.DateFrom.Format("2. 1. 2006")
 	tvars.PeriodTo = period.DateTo.Format("2. 1. 2006")
-	tvars.Amount = fmt.Sprintf("%.2f", bill.Amount)
+	tvars.Payment = fmt.Sprintf("%.2f", bill.Payment)
 	tvars.AppVersion = version.VERSION
-
-	if err != nil {
-		return fmt.Errorf("could not generate qr code: %v", err)
-	}
 
 	es := &EmailSettings{
 		Subject: config.Get().Section("messages").Key("subject_unpaid").String(),
@@ -117,8 +113,10 @@ func SendUnpaidNotification(user models.User, period models.Period, bill models.
 		HTML:    GetUnpaidHTMLTemplate(tvars),
 	}
 
-	if err = SendMail(user.Email, es); err != nil {
-		logger.Error("cannot sent mail: " + err.Error())
+	if errs := SendMail(user.Email, es); len(errs) > 0 {
+		for _, err := range errs {
+			logger.Error("cannot sent mail: " + err.Error())
+		}
 	}
 
 	return nil
