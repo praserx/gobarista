@@ -3,6 +3,7 @@ package database
 
 import (
 	"fmt"
+	"math"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -65,6 +66,7 @@ func RunAutoMigration() error {
 	return gdb.AutoMigrate(
 		&models.Schema{},
 		&models.User{},
+		&models.Transaction{},
 		&models.Period{},
 		&models.Bill{},
 	)
@@ -123,6 +125,22 @@ func UpdateUserName(uid uint, firstname, lastname string) error {
 	return gdb.
 		Model(&user).
 		Updates(models.User{Firstname: firstname, Lastname: lastname}).Error
+}
+
+func DepositMoney(uid uint, amount float32) error {
+	var user models.User
+	gdb.First(&user, uid)
+	return gdb.
+		Model(&user).
+		Update("Credit", user.Credit+int(amount)).Error
+}
+
+func WithdrawMoney(uid uint, amount float32) error {
+	var user models.User
+	gdb.First(&user, uid)
+	return gdb.
+		Model(&user).
+		Update("Credit", user.Credit-int(math.Abs(float64(amount)))).Error
 }
 
 func SelectAllPeriods() ([]models.Period, error) {
@@ -201,12 +219,12 @@ func InsertBill(bill models.Bill) (int, error) {
 	return int(obj.ID), result.Error
 }
 
-func UpdateBillOnPeriodClose(bid uint, amount float32) error {
+func UpdateBillOnPeriodClose(bid uint, amount, payment float32) error {
 	var bill models.Bill
 	gdb.First(&bill, bid)
 	return gdb.
 		Model(&bill).
-		Update("Amount", amount).Error
+		Updates(models.Bill{Amount: amount, Payment: payment}).Error
 }
 
 func UpdateBillOnIssued(bid uint) error {
@@ -231,4 +249,25 @@ func UpdateBillOnPaymentConfirmation(bid uint) error {
 	return gdb.
 		Model(&bill).
 		Update("PaymentConfirmation", true).Error
+}
+
+func SelectAllTransactions() ([]models.Transaction, error) {
+	var transactions []models.Transaction
+	result := gdb.
+		Find(&transactions)
+	return transactions, result.Error
+}
+
+func SelectAllTransactionsForUser(uid uint) ([]models.Transaction, error) {
+	var transactions []models.Transaction
+	result := gdb.
+		Where("user_id = ?", uid).
+		Find(&transactions)
+	return transactions, result.Error
+}
+
+func InsertTransaction(transaction models.Transaction) (int, error) {
+	obj := transaction
+	result := gdb.Create(&obj)
+	return int(obj.ID), result.Error
 }

@@ -1,5 +1,5 @@
 <!doctype html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<html lang="und" dir="auto" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
 <head>
   <title></title>
@@ -84,10 +84,6 @@
 
   </style>
   <style type="text/css">
-  </style>
-  <style type="text/css">
-  </style>
-  <style type="text/css">
     html,
     body {
       font-family: 'Lucida Console', monospace;
@@ -151,7 +147,7 @@
 </head>
 
 <body style="word-spacing:normal;background-color:#d9d6d5;">
-  <div style="background-color:#d9d6d5;">
+  <div style="background-color:#d9d6d5;" lang="und" dir="auto">
     <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
     <div style="margin:0px auto;max-width:600px;">
       <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;">
@@ -284,6 +280,15 @@
                         </table>
                       </td>
                     </tr>
+                    {{ if ne .Amount .Payment }}
+                    <tr>
+                      <td align="center" style="font-size:0px;padding:0;word-break:break-word;">
+                        <div style="font-family:'Lucida Console', monospace;font-size:16px;line-height:22px;text-align:center;color:#ffffff;">
+                          <p>Část pohledávky byla zaplacena z kreditu zákazníka. Stačí doplatit zbývající sumu. Z kreditu bylo zaplaceno {{.CreditPay}}</p>
+                        </div>
+                      </td>
+                    </tr>
+                    {{ end }}
                   </tbody>
                 </table>
               </div>
@@ -312,6 +317,7 @@
                         </div>
                       </td>
                     </tr>
+                    {{ if ne .Payment "0.00" }}
                     <tr>
                       <td align="left" style="font-size:0px;padding:0px;word-break:break-word;">
                         <table cellpadding="0" cellspacing="0" width="100%" border="0" style="color:#000000;font-family:'Lucida Console', monospace;font-size:16px;line-height:22px;table-layout:auto;width:100%;border:none;">
@@ -322,6 +328,10 @@
                           <tr>
                             <td style="padding: 5px 0px;">Variabilní symbol</td>
                             <td style="padding: 5px 0px; text-align:right;">{{.PaymentVS}}</td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 5px 0px;">Částka</td>
+                            <td style="padding: 5px 0px; text-align:right;">{{.Payment}}</td>
                           </tr>
                         </table>
                       </td>
@@ -345,6 +355,15 @@
                         </div>
                       </td>
                     </tr>
+                    {{ else }}
+                    <tr>
+                      <td align="center" style="font-size:0px;padding:0;word-break:break-word;">
+                        <div style="font-family:'Lucida Console', monospace;font-size:16px;line-height:22px;text-align:center;color:#ffffff;">
+                          <p><b>Není třeba nic platit! Vše bylo uhrazeno z vašeho kreditu!</b></p>
+                        </div>
+                      </td>
+                    </tr>
+                    {{ end }}
                   </tbody>
                 </table>
               </div>
