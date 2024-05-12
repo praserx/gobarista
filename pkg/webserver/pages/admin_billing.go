@@ -9,6 +9,8 @@ import (
 	"github.com/praserx/gobarista/pkg/logger"
 )
 
+const AdminBillingTitle = "Billing | GoBarista"
+
 func AdminBillingGET(c *gin.Context) {
 	periods, err := database.SelectAllPeriods()
 	if err != nil {

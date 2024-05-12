@@ -6,7 +6,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/praserx/gobarista/pkg/logger"
+	"github.com/praserx/gobarista/pkg/webserver/middleware"
 	"github.com/praserx/gobarista/pkg/webserver/routes"
 	"github.com/praserx/gobarista/resources"
 )
@@ -30,22 +35,37 @@ func (s *Server) Run() {
 	gin.SetMode(gin.DebugMode)
 	router := gin.Default()
 
-	// router.Use(authorization.AuthorizationMiddleware())
+	initializeMiddlewares(router)
+	initializeViews(router)
 
+	routes.SetupRoutes(router)
+
+	router.Run(fmt.Sprintf("%s:%d", s.host, s.port))
+}
+
+func initializeViews(r *gin.Engine) {
 	htmlTemplates := template.New("default").Funcs(template.FuncMap{
 		"formatAsDate":  formatAsDate,
 		"formatAsMoney": formatAsMoney,
 	})
 	htmlTemplates = template.Must(htmlTemplates.ParseGlob("resources/templates/web/*.go.tmpl"))
 	htmlTemplates = template.Must(htmlTemplates.ParseGlob("resources/templates/web/partials/*.go.tmpl"))
+	r.SetHTMLTemplate(htmlTemplates)
 
-	router.SetHTMLTemplate(htmlTemplates)
+	r.StaticFS("/static", http.FS(resources.DirAssets))
+}
 
-	router.StaticFS("/static", http.FS(resources.DirAssets))
+func initializeMiddlewares(r *gin.Engine) {
+	secret, err := uuid.NewRandom()
+	if err != nil {
+		logger.Error("cannot initialize secret properly")
+	}
 
-	routes.Initialize(router)
+	store := cookie.NewStore([]byte(secret.String()))
 
-	router.Run(fmt.Sprintf("%s:%d", s.host, s.port))
+	r.Use(sessions.Sessions("barista", store))
+	r.Use(middleware.AuthorizationMiddleware())
+	r.Use(middleware.SessionMiddleware())
 }
 
 func formatAsDate(t time.Time) string {

@@ -11,35 +11,33 @@ type Route struct {
 }
 
 var (
-	PageIndex       = "page_index"
-	PageLoginCode   = "page_login_code"
-	PageDashboard   = "page_dashboard"
-	APIv1Users      = "api_v1_users"
-	APIv1UsersID    = "api_v1_users_id"
-	APIv1Bills      = "api_v1_bills"
-	APIv1BillsID    = "api_v1_bills_id"
-	APIv1Accounts   = "api_v1_accounts"
-	APIv1AccountsID = "api_v1_accounts_id"
+	PageRoot             = "page_root"
+	PageCodeVerification = "page_code_verification"
+	PageDashboard        = "page_dashboard"
+	PageBilling          = "page_billing"
+	PageAdminBilling     = "page_admin_billing"
+	PageAdminUsers       = "page_admin_users"
+	PageAdminUsersAdd    = "page_admin_users_add"
 )
 
-func Initialize(router *gin.Engine) {
-	router.GET("/", pages.MainGET)
-	router.GET("/dashboard", pages.DashboardGET)
-	router.GET("/billing", pages.BillingGET)
-	router.GET("/admin/billing", pages.AdminBillingGET)
-	router.GET("/admin/users", pages.AdminUsersGET)
-	router.GET("/admin/users/add", pages.AdminUsersAddGET)
-	router.POST("/admin/users/add", pages.AdminUsersAddPOST)
+var Routes = map[string]Route{
+	PageRoot:             {Title: pages.RootTitle, Path: "/"},
+	PageCodeVerification: {Title: pages.CodeVerificationTitle, Path: "/code-verification"},
+	PageDashboard:        {Title: pages.DashboardTitle, Path: "/dashboard"},
+	PageBilling:          {Title: pages.BillingTitle, Path: "/billing"},
+	PageAdminBilling:     {Title: pages.AdminBillingTitle, Path: "/admin/billing"},
+	PageAdminUsers:       {Title: pages.AdminUsersTitle, Path: "/admin/users"},
+	PageAdminUsersAdd:    {Title: pages.AdminUsersAddTitle, Path: "/admin/users/add"},
 }
 
-var Routes = map[string]Route{
-	PageIndex:       {Title: "Vítejte | GoBarista", Path: "/"},
-	PageLoginCode:   {Title: "Přihlásit se | GoBarista", Path: "/login"},
-	PageDashboard:   {Title: "Přehled | GoBarista", Path: "/dashboard"},
-	APIv1Users:      {Title: "Users", Path: "/api/v1/users"},
-	APIv1UsersID:    {Title: "UsersID", Path: "/api/v1/users/:id"},
-	APIv1Bills:      {Title: "Bills", Path: "/api/v1/bills"},
-	APIv1BillsID:    {Title: "BillsID", Path: "/api/v1/bills/:id"},
-	APIv1Accounts:   {Title: "Accounts", Path: "/api/v1/accounts"},
-	APIv1AccountsID: {Title: "AccountsID", Path: "/api/v1/accounts/:id"},
+func SetupRoutes(router *gin.Engine) {
+	router.GET(Routes[PageRoot].Path, pages.RootGET)
+	router.POST(Routes[PageRoot].Path, pages.RootPOST)
+	router.GET(Routes[PageCodeVerification].Path, pages.CodeVerificationGET)
+	router.GET(Routes[PageDashboard].Path, pages.DashboardGET)
+	router.GET(Routes[PageBilling].Path, pages.BillingGET)
+	router.GET(Routes[PageAdminBilling].Path, pages.AdminBillingGET)
+	router.GET(Routes[PageAdminUsers].Path, pages.AdminUsersGET)
+	router.GET(Routes[PageAdminUsersAdd].Path, pages.AdminUsersAddGET)
+	router.POST(Routes[PageAdminUsersAdd].Path, pages.AdminUsersAddPOST)
 }

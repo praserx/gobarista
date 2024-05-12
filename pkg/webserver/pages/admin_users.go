@@ -9,6 +9,8 @@ import (
 	"github.com/praserx/gobarista/pkg/logger"
 )
 
+const AdminUsersTitle = "Users | GoBarista"
+
 func AdminUsersGET(c *gin.Context) {
 	users, err := database.SelectAllUsers()
 	if err != nil {

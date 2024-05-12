@@ -1,8 +1,4 @@
-package authorization
-
-import (
-	"github.com/praserx/gobarista/pkg/webserver/routes"
-)
+package routes
 
 const RoleAdmin = "admin"
 const RoleUser = "user"
@@ -12,28 +8,31 @@ const RoleGuest = "guest"
 
 var Permissions = map[string]map[string][]rune{
 	RoleAdmin: {
-		routes.APIv1Users:      {'C', 'R', 'U', 'D'},
-		routes.APIv1UsersID:    {'C', 'R', 'U', 'D'},
-		routes.APIv1Bills:      {'C', 'R', 'U', 'D'},
-		routes.APIv1BillsID:    {'C', 'R', 'U', 'D'},
-		routes.APIv1Accounts:   {'C', 'R', 'U', 'D'},
-		routes.APIv1AccountsID: {'C', 'R', 'U', 'D'},
+		PageRoot:             {'C', 'R', 'U', 'D'},
+		PageCodeVerification: {'C', 'R', 'U', 'D'},
+		PageDashboard:        {'C', 'R', 'U', 'D'},
+		PageBilling:          {'C', 'R', 'U', 'D'},
+		PageAdminBilling:     {'C', 'R', 'U', 'D'},
+		PageAdminUsers:       {'C', 'R', 'U', 'D'},
+		PageAdminUsersAdd:    {'C', 'R', 'U', 'D'},
 	},
 	RoleUser: {
-		routes.APIv1Users:      {},
-		routes.APIv1UsersID:    {'R'},
-		routes.APIv1Bills:      {},
-		routes.APIv1BillsID:    {'R'},
-		routes.APIv1Accounts:   {'R'},
-		routes.APIv1AccountsID: {'R'},
+		PageRoot:             {'C', 'R'},
+		PageCodeVerification: {'C', 'R'},
+		PageDashboard:        {'R'},
+		PageBilling:          {'R'},
+		PageAdminBilling:     {},
+		PageAdminUsers:       {},
+		PageAdminUsersAdd:    {},
 	},
 	RoleGuest: {
-		routes.APIv1Users:      {},
-		routes.APIv1UsersID:    {},
-		routes.APIv1Bills:      {},
-		routes.APIv1BillsID:    {},
-		routes.APIv1Accounts:   {},
-		routes.APIv1AccountsID: {},
+		PageRoot:             {'C', 'R'},
+		PageCodeVerification: {'C', 'R'},
+		PageDashboard:        {},
+		PageBilling:          {},
+		PageAdminBilling:     {},
+		PageAdminUsers:       {},
+		PageAdminUsersAdd:    {},
 	},
 }
 

@@ -10,6 +10,8 @@ import (
 	"github.com/praserx/gobarista/pkg/models"
 )
 
+const AdminUsersAddTitle = "Add user | GoBarista"
+
 func AdminUsersAddGET(c *gin.Context) {
 	c.HTML(http.StatusOK, "admin_users_add.go.tmpl", gin.H{
 		"title": "Add user",
@@ -20,8 +22,6 @@ func AdminUsersAddPOST(c *gin.Context) {
 	var ok bool
 	var err error
 	var eid, email, firstname, lastname, location string
-
-	fmt.Println(c.Request.Form)
 
 	if eid, ok = c.GetPostForm("eid"); !ok {
 		c.Status(http.StatusBadRequest)
