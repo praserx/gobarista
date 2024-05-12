@@ -10,12 +10,12 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 18
-    - run: cd templates && npm install --save-dev && npm run build
-    - run: cp -r ./templates/dist/* ./resources/templates
+    - run: cd templates/email && npm install --save-dev && npm run build
+    - run: cp -r ./templates/email/dist/* ./resources/templates/email
     - uses: actions/upload-artifact@v3
       with:
         name: templates
-        path: ./resources/templates
+        path: ./resources/templates/email
   lint:
     needs: prebuild
     strategy:
