@@ -15,6 +15,10 @@ func init() {
 	glog = slog.New(jsonHandler)
 }
 
+func DefaultLogger() *slog.Logger {
+	return glog
+}
+
 func Info(msg string) {
 	glog.Info(msg)
 }

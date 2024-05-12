@@ -18,7 +18,7 @@ const (
 )
 
 type Schema struct {
-	Version uint `gorm:"primarykey" json:"version"`
+	Version uint `json:"version"`
 }
 
 type User struct {

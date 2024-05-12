@@ -85,10 +85,8 @@ func SelectVersion() (schema models.Schema, err error) {
 
 func UpdateVersion(version uint) error {
 	var schema models.Schema
-	gdb.First(&schema)
-	return gdb.
-		Model(&schema).
-		Update("Version", version).Error
+	schema.Version = version
+	return gdb.Save(&schema).Error
 }
 
 func SelectAllUsers() (users []models.User, err error) {

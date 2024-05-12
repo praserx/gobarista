@@ -6,23 +6,24 @@ GOBUILD=CGO_ENABLED=1 CGO_CFLAGS="-g -O2 -Wno-return-local-addr" $(GOCMD) build 
 GOTESTS=CGO_ENABLED=1 CGO_CFLAGS="-g -O2 -Wno-return-local-addr" $(GOCMD) test
 GOCLEAN=$(GOCMD) clean
 
-VERSION=1.4.0
+VERSION=1.5.0
 
 DIRECTORY_BIN=bin
-DIRECTORY_TMP=./resources/templates
+DIRECTORY_TMPL=./resources/templates
 
 all: create-templates copy test build
+quick: build
 
 create-templates:
 	# Create e-mail templates
-	cd templates && npm install --save-dev && npm run build
+	cd templates/email && npm install --save-dev && npm run build
 
 copy:
 	# Create templates directory
-	if [ ! -d "$(DIRECTORY_TMP)" ]; then mkdir -p $(DIRECTORY_TMP); fi
+	if [ ! -d "$(DIRECTORY_TMPL)" ]; then mkdir -p $(DIRECTORY_TMPL)/email; fi
 
-	# Copy templates to templates directory
-	cp -r ./templates/dist/* $(DIRECTORY_TMP)
+	# Copy email templates to templates directory
+	cp -r ./templates/email/dist/* $(DIRECTORY_TMPL)/email
 
 test:
 	# Run tests
