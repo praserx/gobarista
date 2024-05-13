@@ -12,6 +12,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "mjml": "^4.15.3"
+    "mjml": "4.15.3"
   }
 }

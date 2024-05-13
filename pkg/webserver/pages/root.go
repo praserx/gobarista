@@ -25,30 +25,36 @@ func RootPOST(c *gin.Context) {
 	var email string
 
 	if email, ok = c.GetPostForm("email"); !ok {
-		c.Status(http.StatusBadRequest)
+		logger.Warning("request with malformed data input")
+		c.HTML(http.StatusBadRequest, "root.go.tmpl", gin.H{
+			"title":        AdminUsersAddTitle,
+			"message":      "The data you sent are not correct!",
+			"message_type": "warning",
+		})
 		return
 	}
 
-	logger.Info(email)
-
 	if user, err := database.SelectUserByEmail(email); err == nil {
-
 		sessionID := sessions.Default(c).Get(security.SessionKey).(string)
-
 		userSession := security.Session{
 			UserID:      user.ID,
 			UserRole:    "",
 			Code:        security.Code(),
+			CodeUsed:    false,
 			CodeValidTo: time.Now().Add(5 * time.Minute),
 			Logged:      false,
 		}
 
 		security.SessionSet(sessionID, userSession)
 		logger.Info(fmt.Sprintf("code: %s", userSession.Code))
-		// Send verification code here
+		// TODO: Send verification code here via email
 	} else {
-		logger.Info("user do not exists")
-		c.Status(http.StatusBadRequest)
+		logger.Warning("login attempt for nonexisting user")
+		c.HTML(http.StatusUnauthorized, "root.go.tmpl", gin.H{
+			"title":        AdminUsersAddTitle,
+			"message":      "We do not recognize you! Is this your account?",
+			"message_type": "warning",
+		})
 		return
 	}
 

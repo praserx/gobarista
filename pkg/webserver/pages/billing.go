@@ -25,7 +25,7 @@ func BillingGET(c *gin.Context) {
 	})
 
 	c.HTML(http.StatusOK, "billing.go.tmpl", gin.H{
-		"title": "Billing",
+		"title": BillingTitle,
 		"bills": bills,
 	})
 }

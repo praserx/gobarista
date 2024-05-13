@@ -56,22 +56,30 @@ func AdminUsersAddPOST(c *gin.Context) {
 		Location:  location,
 	}
 
-	if _, err = database.SelectUserByEID(user.EID); err != nil {
-		id, err := database.InsertUser(user)
-		if err != nil {
-			logger.Info(fmt.Sprintf("error: cannot create user: %v", err.Error()))
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-		logger.Info(fmt.Sprintf("user successfully created: new user id: %d", id))
-	} else {
-		logger.Info("user already exists")
-		c.Status(http.StatusBadRequest)
+	if _, err = database.SelectUserByEID(user.EID); err == nil {
+		logger.Warning("user already exists")
+		c.HTML(http.StatusBadRequest, "admin_users_add.go.tmpl", gin.H{
+			"title":        AdminUsersAddTitle,
+			"message":      "User already exists!",
+			"message_type": "danger",
+		})
 		return
 	}
 
+	id, err := database.InsertUser(user)
+	if err != nil {
+		logger.Info(fmt.Sprintf("error: cannot create user: %v", err.Error()))
+		c.HTML(http.StatusInternalServerError, "admin_users_add.go.tmpl", gin.H{
+			"title":        AdminUsersAddTitle,
+			"message":      "Ooops! Something goes wrong.",
+			"message_type": "danger",
+		})
+		return
+	}
+
+	logger.Info(fmt.Sprintf("new user successfully created: new user id: %d", id))
 	c.HTML(http.StatusOK, "admin_users_add.go.tmpl", gin.H{
-		"title":        "Add user",
+		"title":        AdminUsersAddTitle,
 		"message":      "User was successfuly added!",
 		"message_type": "success",
 	})

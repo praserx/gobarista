@@ -19,6 +19,7 @@ type Session struct {
 	UserID      uint
 	UserRole    string
 	Code        string
+	CodeUsed    bool
 	CodeValidTo time.Time
 	Logged      bool
 }

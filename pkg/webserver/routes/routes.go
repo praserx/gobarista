@@ -34,6 +34,7 @@ func SetupRoutes(router *gin.Engine) {
 	router.GET(Routes[PageRoot].Path, pages.RootGET)
 	router.POST(Routes[PageRoot].Path, pages.RootPOST)
 	router.GET(Routes[PageCodeVerification].Path, pages.CodeVerificationGET)
+	router.POST(Routes[PageCodeVerification].Path, pages.CodeVerificationPOST)
 	router.GET(Routes[PageDashboard].Path, pages.DashboardGET)
 	router.GET(Routes[PageBilling].Path, pages.BillingGET)
 	router.GET(Routes[PageAdminBilling].Path, pages.AdminBillingGET)
