@@ -1,6 +1,7 @@
 package routes
 
 const RoleAdmin = "admin"
+const RoleManager = "manager"
 const RoleUser = "user"
 const RoleGuest = "guest"
 

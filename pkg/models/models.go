@@ -75,3 +75,12 @@ type Bill struct {
 	UserID              uint           `json:"-"`                    // GORM reference
 	PeriodID            uint           `json:"-"`                    // GORM reference
 }
+
+type RoleAssignment struct {
+	ID        uint           `gorm:"primarykey" json:"id"` // GORM default
+	CreatedAt time.Time      `json:"timestamp"`            // GORM default
+	UpdatedAt time.Time      `json:"-"`                    // GORM default
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`       // GORM default
+	Role      string         `json:"role"`                 // Role name
+	UserID    uint           `json:"-"`                    // GORM reference
+}
