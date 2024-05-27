@@ -18,7 +18,7 @@ const (
 )
 
 type Schema struct {
-	Version uint `gorm:"primarykey" json:"version"`
+	Version uint `json:"version"`
 }
 
 type User struct {
@@ -74,4 +74,13 @@ type Bill struct {
 	PaymentConfirmation bool           `json:"payment_confirmation"` // Has confirmation of payment been sent?
 	UserID              uint           `json:"-"`                    // GORM reference
 	PeriodID            uint           `json:"-"`                    // GORM reference
+}
+
+type RoleAssignment struct {
+	ID        uint           `gorm:"primarykey" json:"id"` // GORM default
+	CreatedAt time.Time      `json:"timestamp"`            // GORM default
+	UpdatedAt time.Time      `json:"-"`                    // GORM default
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`       // GORM default
+	Role      string         `json:"role"`                 // Role name
+	UserID    uint           `json:"-"`                    // GORM reference
 }

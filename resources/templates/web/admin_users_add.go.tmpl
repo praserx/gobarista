@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  {{template "partials/meta"}}
+  <title>{{.title}}</title>
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    {{template "partials/sidebar"}}
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+      {{template "partials/header"}}
+      <div class="container-fluid">
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title fw-semibold mb-4">Add user</h5>
+              {{if .message }}
+              <div class="alert alert-{{ .message_type }}" role="alert">
+                {{ .message }}
+              </div>
+              {{end}}
+              <div class="card">
+                <div class="card-body">
+                  <form  action="/admin/users/add" method="post">
+                    <div class="mb-3">
+                      <label for="inputEID" class="form-label">Emplyee ID</label>
+                      <input type="text" class="form-control" id="eid" name="eid" aria-describedby="eidHelp">
+                    </div>
+                    <div class="mb-3">
+                      <label for="inputFirstname" class="form-label">First name</label>
+                      <input type="text" class="form-control" id="firstname" name="firstname" aria-describedby="firstnameHelp">
+                    </div>
+                    <div class="mb-3">
+                      <label for="inputLastname" class="form-label">Last name</label>
+                      <input type="text" class="form-control" id="lastname" name="lastname" aria-describedby="lastnameHelp">
+                    </div>
+                    <div class="mb-3">
+                      <label for="inputEmail" class="form-label">Email</label>
+                      <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
+                    </div>
+                    <div class="mb-3">
+                      <label for="inputLocation" class="form-label">Location</label>
+                      <input type="text" class="form-control" id="location" name="location"  aria-describedby="locationHelp">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{template "partials/scripts"}}
+</body>
+
+</html>

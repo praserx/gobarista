@@ -29,6 +29,7 @@ func main() {
 			&commands.Billing,
 			&commands.Database,
 			&commands.Users,
+			&commands.Web,
 		},
 	}
 

@@ -1,0 +1,17 @@
+{
+  "name": "gobarista-email-template",
+  "version": "1.4.0",
+  "description": "GoBarista e-mail mjml.io template",
+  "main": "index.js",
+  "scripts": {
+    "build-bill": "./node_modules/mjml/bin/mjml ./mjml/bill.cs.mjml -o ./dist/bill.cs.html",
+    "build-confirm": "./node_modules/mjml/bin/mjml ./mjml/confirm.cs.mjml -o ./dist/confirm.cs.html",
+    "build-unpaid": "./node_modules/mjml/bin/mjml ./mjml/unpaid.cs.mjml -o ./dist/unpaid.cs.html",
+    "build": "npm run build-bill && npm run build-confirm && npm run build-unpaid"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "mjml": "4.15.3"
+  }
+}
